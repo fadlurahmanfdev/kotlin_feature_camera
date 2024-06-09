@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("maven-publish")
 }
 
 android {
@@ -45,4 +46,18 @@ dependencies {
     api("androidx.camera:camera-camera2:${camerax_version}")
     api("androidx.camera:camera-lifecycle:${camerax_version}")
     api("androidx.camera:camera-view:${camerax_version}")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release"){
+            groupId = "co.id.fadlurahmanfdev"
+            artifactId = "kotlin_feature_camera"
+            version = "0.0.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
