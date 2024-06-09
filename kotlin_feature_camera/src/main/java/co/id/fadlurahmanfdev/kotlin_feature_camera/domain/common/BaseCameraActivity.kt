@@ -50,6 +50,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         executor = ContextCompat.getMainExecutor(this)
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         onSetCameraPurpose()
+        onSetCameraFacing()
         onCreateBaseCamera(savedInstanceState)
     }
 
