@@ -5,11 +5,20 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presentation.PreviewImageActivity">
 
     <ImageView
         android:id="@+id/previewImage"
+        android:background="@color/black"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <co.id.fadlurahmanfdev.kotlin_feature_camera.presentation.SelfieOverlayView
+        android:layout_width="match_parent"
+        android:background="@color/black_opacity_20"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

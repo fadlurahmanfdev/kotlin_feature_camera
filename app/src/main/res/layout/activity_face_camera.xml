@@ -5,11 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.CameraAnalysisActivity">
+    tools:context=".presentation.SingleCameraActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
+        app:scaleType="fitCenter"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <co.id.fadlurahmanfdev.kotlin_feature_camera.presentation.SelfieOverlayView
+        android:layout_width="match_parent"
+        android:background="@color/black_opacity_20"
         android:layout_height="match_parent"/>
 
     <LinearLayout

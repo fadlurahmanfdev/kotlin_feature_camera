@@ -101,9 +101,10 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
-        val resolutionSelector = ResolutionSelector.Builder().setAspectRatioStrategy(
-            AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
-        ).build()
+        val resolutionSelector = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+            .build()
+
 
         preview = Preview.Builder().apply {
             setResolutionSelector(resolutionSelector)
