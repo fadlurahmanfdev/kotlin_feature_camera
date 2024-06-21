@@ -15,6 +15,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.TorchState
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -100,13 +101,20 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
-        preview = Preview.Builder().build().apply {
+        val resolutionSelector = ResolutionSelector.Builder().setAspectRatioStrategy(
+            AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+        ).build()
+
+        preview = Preview.Builder().apply {
+            setResolutionSelector(resolutionSelector)
+        }.build().apply {
             setSurfaceProviderBaseCamera(this)
         }
 
         when (cameraPurpose) {
             IMAGE_CAPTURE -> {
                 imageCapture = ImageCapture.Builder().setFlashMode(ImageCapture.FLASH_MODE_ON)
+                    .setResolutionSelector(resolutionSelector)
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                     .build()
                 useCaseGroup = UseCaseGroup.Builder().apply {
@@ -136,6 +144,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         try {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
+            onBindCameraToView()
         } catch (e: Throwable) {
             Log.e(
                 BaseCameraActivity::class.java.simpleName,
@@ -143,6 +152,8 @@ abstract class BaseCameraActivity : AppCompatActivity() {
             )
         }
     }
+
+    abstract fun onBindCameraToView()
 
     abstract fun setSurfaceProviderBaseCamera(preview: Preview)
 
@@ -188,6 +199,10 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
     private var captureListener: CaptureListener? = null
+
+    /**
+     * addCaptureListener inside function [onBindCameraToView]
+     * */
     fun addCaptureListener(captureListener: CaptureListener) {
         if (this.captureListener != null) return
         this.captureListener = captureListener
@@ -203,6 +218,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
                 super.onCaptureSuccess(image)
                 Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
                 captureListener?.onCaptureSuccess(image)
+                image.close()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -235,7 +251,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
     interface CaptureListener {
-        fun onCaptureSuccess(image: ImageProxy)
+        fun onCaptureSuccess(imageProxy: ImageProxy)
         fun onCaptureError(exception: FeatureCameraException)
         fun isTorchChanged(isTorch: Boolean)
     }

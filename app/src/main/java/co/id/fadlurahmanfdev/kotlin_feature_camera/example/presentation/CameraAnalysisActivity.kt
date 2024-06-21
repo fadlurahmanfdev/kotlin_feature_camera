@@ -48,6 +48,10 @@ class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeL
         }
     }
 
+    override fun onBindCameraToView() {
+
+    }
+
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }

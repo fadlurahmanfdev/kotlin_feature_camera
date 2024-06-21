@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Kotlin_feature_camera"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.PreviewImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.CameraAnalysisActivity"
             android:exported="false" />
         <activity
