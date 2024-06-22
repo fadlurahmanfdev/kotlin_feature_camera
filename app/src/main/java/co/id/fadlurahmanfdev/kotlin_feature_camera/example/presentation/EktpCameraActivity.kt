@@ -73,7 +73,7 @@ class EktpCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
         if (base64Image != null) {
             FeatureCameraUtility.base64Image = base64Image
             FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-            val intent = Intent(this, PreviewImageActivity::class.java)
+            val intent = Intent(this, PreviewEKTPImageActivity::class.java)
             startActivity(intent)
         }
     }

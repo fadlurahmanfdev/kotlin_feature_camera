@@ -10,6 +10,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.Analyzer
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
@@ -17,6 +18,7 @@ import androidx.camera.core.TorchState
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
@@ -25,6 +27,7 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose.*
 import com.google.common.util.concurrent.ListenableFuture
+import java.io.File
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -102,13 +105,13 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
         val resolutionSelector = ResolutionSelector.Builder()
-            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
             .build()
 
 
         preview = Preview.Builder().apply {
             setResolutionSelector(resolutionSelector)
-        }.build().apply {
+        } .build().apply {
             setSurfaceProviderBaseCamera(this)
         }
 
@@ -117,6 +120,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
                 imageCapture = ImageCapture.Builder().setFlashMode(ImageCapture.FLASH_MODE_ON)
                     .setResolutionSelector(resolutionSelector)
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+
                     .build()
                 useCaseGroup = UseCaseGroup.Builder().apply {
                     addUseCase(preview)

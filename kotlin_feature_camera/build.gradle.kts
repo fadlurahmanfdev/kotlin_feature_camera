@@ -47,6 +47,8 @@ dependencies {
     api("androidx.camera:camera-camera2:${camerax_version}")
     api("androidx.camera:camera-lifecycle:${camerax_version}")
     api("androidx.camera:camera-view:${camerax_version}")
+
+    api("de.hdodenhof:circleimageview:3.1.0")
 }
 
 publishing {

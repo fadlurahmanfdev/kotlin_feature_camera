@@ -2,6 +2,7 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.util.Base64
 import androidx.camera.core.ImageProxy
 import java.io.ByteArrayOutputStream
@@ -27,5 +28,19 @@ object FeatureCameraUtility {
         val bytes = ByteArray(buffer.remaining())
         buffer[bytes]
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    fun mirrorBitmapImage(bitmapImage: Bitmap): Bitmap {
+        val matrix = Matrix()
+        matrix.preScale(1.0f, -1.0f)
+        return Bitmap.createBitmap(
+            bitmapImage,
+            0,
+            0,
+            bitmapImage.width,
+            bitmapImage.height,
+            matrix,
+            true
+        )
     }
 }

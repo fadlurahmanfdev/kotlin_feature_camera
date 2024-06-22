@@ -1,6 +1,7 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Bundle
 import android.widget.ImageView
@@ -64,23 +65,11 @@ class FaceCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy) {
-        FeatureCameraUtility.bitmapImage = FeatureCameraUtility.getBitmapFromImageProxy(imageProxy)
+        FeatureCameraUtility.bitmapImage = imageProxy.toBitmap()
+        FeatureCameraUtility.bitmapImage = FeatureCameraUtility.mirrorBitmapImage(FeatureCameraUtility.bitmapImage)
         FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-        val intent = Intent(this, PreviewImageActivity::class.java)
+        val intent = Intent(this, PreviewFaceImageActivity::class.java)
         startActivity(intent)
-
-
-//        val buffer = imageProxy.planes[0].buffer
-//        val bytes = ByteArray(buffer.capacity())
-//        buffer[bytes]
-//        val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-//        val base64Image = FeatureCameraUtility.getBase64FromBitmap(bitmapImage)
-//        if (base64Image != null) {
-//            FeatureCameraUtility.base64Image = base64Image
-//            FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-//            val intent = Intent(this, PreviewImageActivity::class.java)
-//            startActivity(intent)
-//        }
     }
 
     override fun onCaptureError(exception: FeatureCameraException) {
