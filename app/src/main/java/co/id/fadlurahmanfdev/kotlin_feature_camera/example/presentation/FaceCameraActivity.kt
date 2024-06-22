@@ -2,6 +2,7 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.camera.core.ImageProxy
@@ -11,18 +12,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
-class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListener {
+class FaceCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
     override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_single_camera)
+        setContentView(R.layout.activity_face_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -65,17 +65,11 @@ class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureLis
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy) {
-        val buffer = imageProxy.planes[0].buffer
-        val bytes = ByteArray(buffer.capacity())
-        buffer[bytes]
-        val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        val base64Image = FeatureCameraUtility.getBase64FromBitmap(bitmapImage)
-        if (base64Image != null) {
-            FeatureCameraUtility.base64Image = base64Image
-            FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-            val intent = Intent(this, PreviewImageActivity::class.java)
-            startActivity(intent)
-        }
+        FeatureCameraUtility.bitmapImage = imageProxy.toBitmap()
+        FeatureCameraUtility.bitmapImage = FeatureCameraUtility.mirrorBitmapImage(FeatureCameraUtility.bitmapImage)
+        FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
+        val intent = Intent(this, PreviewFaceImageActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onCaptureError(exception: FeatureCameraException) {

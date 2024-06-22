@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -46,6 +47,8 @@ dependencies {
     api("androidx.camera:camera-camera2:${camerax_version}")
     api("androidx.camera:camera-lifecycle:${camerax_version}")
     api("androidx.camera:camera-view:${camerax_version}")
+
+    api("de.hdodenhof:circleimageview:3.1.0")
 }
 
 publishing {

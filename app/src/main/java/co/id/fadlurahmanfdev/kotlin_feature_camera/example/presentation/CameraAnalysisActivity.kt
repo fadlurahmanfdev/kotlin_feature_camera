@@ -21,7 +21,7 @@ class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeL
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
     override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_camera_analysis)
+        setContentView(R.layout.activity_single_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -46,6 +46,10 @@ class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeL
         ivCamera.setOnClickListener {
             startAnalyze()
         }
+    }
+
+    override fun onBindCameraToView() {
+
     }
 
     override fun setSurfaceProviderBaseCamera(preview: Preview) {

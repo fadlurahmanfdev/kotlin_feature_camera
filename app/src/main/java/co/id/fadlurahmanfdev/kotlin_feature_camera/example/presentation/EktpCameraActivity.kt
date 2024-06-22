@@ -16,13 +16,13 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActiv
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
-class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListener {
+class EktpCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
     override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_single_camera)
+        setContentView(R.layout.activity_ektp_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -61,7 +61,7 @@ class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureLis
     }
 
     override fun onSetCameraFacing() {
-        setCameraFacing(FeatureCameraFacing.FRONT)
+        setCameraFacing(FeatureCameraFacing.BACK)
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy) {
@@ -73,7 +73,7 @@ class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureLis
         if (base64Image != null) {
             FeatureCameraUtility.base64Image = base64Image
             FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-            val intent = Intent(this, PreviewImageActivity::class.java)
+            val intent = Intent(this, PreviewEKTPImageActivity::class.java)
             startActivity(intent)
         }
     }
