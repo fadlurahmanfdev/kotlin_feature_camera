@@ -288,7 +288,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     interface CaptureListener {
         /**
-         * no need to close imageProxy
+         * close [imageProxy] to capture another image
          */
         fun onCaptureSuccess(imageProxy: ImageProxy)
         fun onCaptureError(exception: FeatureCameraException)
