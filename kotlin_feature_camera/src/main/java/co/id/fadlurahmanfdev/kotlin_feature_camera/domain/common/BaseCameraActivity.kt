@@ -162,7 +162,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
             camera.cameraInfo.torchState.observe(this) { state ->
                 isTorchTurnOn = (state == TorchState.ON)
-                captureListener?.isTorchChanged(state == TorchState.ON)
+                analyzeListener?.isTorchChanged(state == TorchState.ON)
             }
             onAfterBindCameraToView()
         } catch (e: Throwable) {
@@ -289,11 +289,11 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     interface CaptureListener {
         fun onCaptureSuccess(imageProxy: ImageProxy)
         fun onCaptureError(exception: FeatureCameraException)
-        fun isTorchChanged(isTorch: Boolean)
     }
 
     interface AnalyzeListener {
         fun onStartAnalyze()
         fun onStopAnalyze()
+        fun isTorchChanged(isTorch: Boolean)
     }
 }
