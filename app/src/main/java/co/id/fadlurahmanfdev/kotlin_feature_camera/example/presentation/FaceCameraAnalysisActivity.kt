@@ -77,4 +77,8 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.Anal
         ivCamera.visibility = View.VISIBLE
         ivStopCamera.visibility = View.GONE
     }
+
+    override fun isTorchChanged(isTorch: Boolean) {
+
+    }
 }

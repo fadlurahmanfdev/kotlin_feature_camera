@@ -76,8 +76,4 @@ class SingleCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureLis
     override fun onCaptureError(exception: FeatureCameraException) {
         println("MASUK ERROR CAPTURE: ${exception.enumError}")
     }
-
-    override fun isTorchChanged(isTorch: Boolean) {
-        println("MASUK TOCH CHANGED: $isTorch")
-    }
 }

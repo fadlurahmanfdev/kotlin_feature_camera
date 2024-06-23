@@ -244,11 +244,11 @@ abstract class BaseCameraActivity : AppCompatActivity() {
                 super.onCaptureSuccess(image)
                 Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
                 captureListener?.onCaptureSuccess(image)
-                image.close()
             }
 
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
+                Log.e(BaseCameraActivity::class.java.simpleName, "onCaptureError: ${exception.message}")
                 captureListener?.onCaptureError(
                     FeatureCameraException(
                         enumError = "ERR_GENERAL_CAPTURE",
@@ -266,7 +266,7 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
 
-    var isStartAnalysis: Boolean = false
+    private var isStartAnalysis: Boolean = false
     fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
         if (isStartAnalysis) {
             Log.w(BaseCameraActivity::class.java.simpleName, "camera already analysis")
@@ -287,6 +287,9 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
     interface CaptureListener {
+        /**
+         * no need to close imageProxy
+         */
         fun onCaptureSuccess(imageProxy: ImageProxy)
         fun onCaptureError(exception: FeatureCameraException)
     }

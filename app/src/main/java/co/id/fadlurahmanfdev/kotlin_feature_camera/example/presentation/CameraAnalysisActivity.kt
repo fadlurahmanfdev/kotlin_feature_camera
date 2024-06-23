@@ -65,4 +65,8 @@ class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeL
     override fun onStopAnalyze() {
         ivCamera.visibility = View.VISIBLE
     }
+
+    override fun isTorchChanged(isTorch: Boolean) {
+
+    }
 }
