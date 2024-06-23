@@ -10,8 +10,8 @@ import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
@@ -21,6 +21,9 @@ class EktpCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
+    override var cameraFacing: FeatureCameraFacing = FeatureCameraFacing.BACK
+    override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_CAPTURE
+
     override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_ektp_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -48,20 +51,12 @@ class EktpCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
         }
     }
 
-    override fun onBindCameraToView() {
+    override fun onAfterBindCameraToView() {
         addCaptureListener(this)
     }
 
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
-    }
-
-    override fun onSetCameraPurpose() {
-        setCameraPurposeCapture()
-    }
-
-    override fun onSetCameraFacing() {
-        setCameraFacing(FeatureCameraFacing.BACK)
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy) {

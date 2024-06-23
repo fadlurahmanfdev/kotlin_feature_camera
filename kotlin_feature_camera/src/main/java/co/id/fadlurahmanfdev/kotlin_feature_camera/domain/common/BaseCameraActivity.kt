@@ -20,30 +20,34 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing.BACK
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing.FRONT
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose.IMAGE_ANALYSIS
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose.IMAGE_CAPTURE
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing.BACK
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing.FRONT
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_ANALYSIS
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_CAPTURE
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraRatio
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class BaseCameraActivity : AppCompatActivity() {
-    lateinit var cameraExecutor: ExecutorService
-    lateinit var executor: Executor
-    lateinit var camera: Camera
-    lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
-    lateinit var cameraProvider: ProcessCameraProvider
-    var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    lateinit var imageCapture: ImageCapture
-    lateinit var imageAnalysis: ImageAnalysis
-    lateinit var analyzer: Analyzer
-    lateinit var preview: Preview
-    lateinit var cameraPurpose: FeatureCameraPurpose
-    lateinit var useCaseGroup: UseCaseGroup
+    private lateinit var cameraExecutor: ExecutorService
+    private lateinit var executor: Executor
+    private lateinit var camera: Camera
+    private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
+    private lateinit var cameraProvider: ProcessCameraProvider
+    abstract var cameraFacing: FeatureCameraFacing
+    private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var imageCapture: ImageCapture
+    private lateinit var imageAnalysis: ImageAnalysis
+    private lateinit var analyzer: Analyzer
+    private lateinit var preview: Preview
+    abstract var cameraPurpose: FeatureCameraPurpose
+    open var cameraRatio: FeatureCameraRatio = FeatureCameraRatio.RATIO_16_9
+    private lateinit var useCaseGroup: UseCaseGroup
 
     val handler = Handler(Looper.getMainLooper())
 
@@ -52,37 +56,36 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         onStartCreateBaseCamera(savedInstanceState)
         executor = ContextCompat.getMainExecutor(this)
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        onSetCameraPurpose()
         onSetCameraFacing()
         onCreateBaseCamera(savedInstanceState)
     }
 
-    /**
-     * [setCameraPurposeCapture] for purposes
-     * */
-    abstract fun onSetCameraPurpose()
-
-    fun setCameraPurposeCapture() {
-        cameraPurpose = IMAGE_CAPTURE
-    }
-
-    fun setCameraPurposeAnalysis(analyzer: ImageAnalysis.Analyzer) {
-        cameraPurpose = IMAGE_ANALYSIS
+    private fun addImageAnalysisAnalyzer(analyzer: ImageAnalysis.Analyzer) {
+        val resolution = ResolutionSelector.Builder()
+            .setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
+            .build()
+        imageAnalysis = ImageAnalysis.Builder()
+            .setResolutionSelector(resolution)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+        imageAnalysis.setAnalyzer(executor, analyzer)
         this.analyzer = analyzer
     }
 
-    abstract fun onSetCameraFacing()
-
-    fun setCameraFacing(cameraFacing: FeatureCameraFacing) {
-        when (cameraFacing) {
+    private fun onSetCameraFacing() {
+        cameraSelector = when (cameraFacing) {
             FRONT -> {
-                cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                CameraSelector.DEFAULT_FRONT_CAMERA
             }
 
             BACK -> {
-                cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                CameraSelector.DEFAULT_BACK_CAMERA
             }
         }
+    }
+
+    fun setFeatureCameraFacing(cameraFacing: FeatureCameraFacing) {
+        this.cameraFacing = cameraFacing
     }
 
     abstract fun onStartCreateBaseCamera(savedInstanceState: Bundle?)
@@ -101,25 +104,42 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         }, executor)
     }
 
+    fun isHaveCamera(facing: FeatureCameraFacing): Boolean {
+        return when (facing) {
+            FRONT -> {
+                cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
+            }
+
+            BACK -> {
+                cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
+            }
+        }
+    }
+
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
         val resolutionSelector = ResolutionSelector.Builder()
-            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+            .setAspectRatioStrategy(if (cameraRatio == FeatureCameraRatio.RATIO_4_3) AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY else AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .build()
-
 
         preview = Preview.Builder().apply {
             setResolutionSelector(resolutionSelector)
-        } .build().apply {
+        }.build().apply {
             setSurfaceProviderBaseCamera(this)
         }
 
         when (cameraPurpose) {
             IMAGE_CAPTURE -> {
-                imageCapture = ImageCapture.Builder().setFlashMode(ImageCapture.FLASH_MODE_ON)
+                imageCapture = ImageCapture.Builder()
+                    .setFlashMode(
+                        when (cameraFlash) {
+                            FeatureCameraFlash.ON -> ImageCapture.FLASH_MODE_ON
+                            FeatureCameraFlash.AUTO -> ImageCapture.FLASH_MODE_AUTO
+                            else -> ImageCapture.FLASH_MODE_OFF
+                        }
+                    )
                     .setResolutionSelector(resolutionSelector)
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-
                     .build()
                 useCaseGroup = UseCaseGroup.Builder().apply {
                     addUseCase(preview)
@@ -128,14 +148,6 @@ abstract class BaseCameraActivity : AppCompatActivity() {
             }
 
             IMAGE_ANALYSIS -> {
-                val resolution = ResolutionSelector.Builder()
-                    .setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
-                    .build()
-                imageAnalysis = ImageAnalysis.Builder()
-                    .setResolutionSelector(resolution)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                imageAnalysis.setAnalyzer(executor, analyzer)
                 useCaseGroup = UseCaseGroup.Builder().apply {
                     addUseCase(preview)
                 }.build()
@@ -148,7 +160,11 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         try {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
-            onBindCameraToView()
+            camera.cameraInfo.torchState.observe(this) { state ->
+                isTorchTurnOn = (state == TorchState.ON)
+                captureListener?.isTorchChanged(state == TorchState.ON)
+            }
+            onAfterBindCameraToView()
         } catch (e: Throwable) {
             Log.e(
                 BaseCameraActivity::class.java.simpleName,
@@ -157,7 +173,8 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         }
     }
 
-    abstract fun onBindCameraToView()
+    @Deprecated("delete soon")
+    abstract fun onAfterBindCameraToView()
 
     abstract fun setSurfaceProviderBaseCamera(preview: Preview)
 
@@ -168,19 +185,31 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
     fun hasFlashUnit(): Boolean {
-        return camera.cameraInfo.hasFlashUnit()
+        return camera.cameraInfo.hasFlashUnit() ?: false
     }
 
-    var isTorchTurnOn: Boolean = false
+    private var cameraFlash: FeatureCameraFlash = FeatureCameraFlash.OFF
+    fun switchFlash(cameraFlash: FeatureCameraFlash) {
+        this.cameraFlash = cameraFlash
+    }
+
+    private var isTorchTurnOn: Boolean = false
     fun enableTorch() {
-        if (hasFlashUnit()) {
-            if (!isTorchTurnOn) {
-                isTorchTurnOn = true
-                camera.cameraControl.enableTorch(isTorchTurnOn)
-            } else {
-                isTorchTurnOn = false
-                camera.cameraControl.enableTorch(isTorchTurnOn)
+        if (cameraPurpose == FeatureCameraPurpose.IMAGE_ANALYSIS) {
+            if (hasFlashUnit()) {
+                if (!isTorchTurnOn) {
+                    isTorchTurnOn = true
+                    camera.cameraControl.enableTorch(isTorchTurnOn)
+                } else {
+                    isTorchTurnOn = false
+                    camera.cameraControl.enableTorch(isTorchTurnOn)
+                }
             }
+        } else {
+            Log.w(
+                BaseCameraActivity::class.java.simpleName,
+                "unable to turn on torch, cameraPurpose should be ImageAnalysis"
+            )
         }
     }
 
@@ -204,16 +233,9 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     private var captureListener: CaptureListener? = null
 
-    /**
-     * addCaptureListener inside function [onBindCameraToView]
-     * */
     fun addCaptureListener(captureListener: CaptureListener) {
         if (this.captureListener != null) return
         this.captureListener = captureListener
-        camera.cameraInfo.torchState.observe(this) { state ->
-            isTorchTurnOn = (state == TorchState.ON)
-            this.captureListener?.isTorchChanged(state == TorchState.ON)
-        }
     }
 
     fun takePicture() {
@@ -244,7 +266,14 @@ abstract class BaseCameraActivity : AppCompatActivity() {
     }
 
 
-    fun startAnalyze() {
+    var isStartAnalysis: Boolean = false
+    fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
+        if (isStartAnalysis) {
+            Log.w(BaseCameraActivity::class.java.simpleName, "camera already analysis")
+            return
+        }
+        isStartAnalysis = true
+        addImageAnalysisAnalyzer(analyzer)
         useCaseGroup.useCases.add(imageAnalysis)
         bindCameraToView()
         analyzeListener?.onStartAnalyze()
@@ -252,6 +281,9 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     fun stopAnalyze() {
         imageAnalysis.clearAnalyzer()
+        useCaseGroup.useCases.remove(imageAnalysis)
+        isStartAnalysis = false
+        analyzeListener?.onStopAnalyze()
     }
 
     interface CaptureListener {
@@ -262,5 +294,6 @@ abstract class BaseCameraActivity : AppCompatActivity() {
 
     interface AnalyzeListener {
         fun onStartAnalyze()
+        fun onStopAnalyze()
     }
 }

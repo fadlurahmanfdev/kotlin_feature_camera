@@ -38,6 +38,12 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
             desc = "Face Camera",
             enum = "FACE_CAMERA"
         ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Face Analysis Camera",
+            desc = "Face Analysis Camera",
+            enum = "FACE_ANALYSIS_CAMERA"
+        ),
     )
 
     private lateinit var rv: RecyclerView
@@ -84,6 +90,11 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
             "FACE_CAMERA" -> {
                 val intent = Intent(this, FaceCameraActivity::class.java)
+                startActivity(intent)
+            }
+
+            "FACE_ANALYSIS_CAMERA" -> {
+                val intent = Intent(this, FaceCameraAnalysisActivity::class.java)
                 startActivity(intent)
             }
         }
