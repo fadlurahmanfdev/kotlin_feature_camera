@@ -48,6 +48,8 @@ class FaceCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
         ivCamera.setOnClickListener {
             takePicture()
         }
+
+        addCaptureListener(this)
     }
 
     override fun onAfterBindCameraToView() {
@@ -59,8 +61,10 @@ class FaceCameraActivity : BaseCameraActivity(), BaseCameraActivity.CaptureListe
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy) {
-        FeatureCameraUtility.bitmapImage = imageProxy.toBitmap()
-        FeatureCameraUtility.bitmapImage = FeatureCameraUtility.mirrorBitmapImage(FeatureCameraUtility.bitmapImage)
+        println("MASUK_ IMAGE ROTATION: ${imageProxy.imageInfo.rotationDegrees}")
+        FeatureCameraUtility.bitmapImage = FeatureCameraUtility.getBitmapFromImageProxy(imageProxy)
+//        FeatureCameraUtility.bitmapImage =
+//            FeatureCameraUtility.mirrorBitmapImage(FeatureCameraUtility.bitmapImage)
         FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
         val intent = Intent(this, PreviewFaceImageActivity::class.java)
         startActivity(intent)

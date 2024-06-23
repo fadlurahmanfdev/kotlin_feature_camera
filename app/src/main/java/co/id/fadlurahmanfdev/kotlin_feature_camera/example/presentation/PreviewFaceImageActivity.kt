@@ -28,27 +28,15 @@ class PreviewFaceImageActivity : AppCompatActivity() {
 
         imageView = findViewById(R.id.previewImage)
 
-//        val base64Image = FeatureCameraUtility.base64Image
-//        val imageBytes = Base64.decode(base64Image, 0)
-//        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//        imageView.rotation = FeatureCameraUtility.rotationDegree
-//        imageView.setImageBitmap(image)
-
-//        Glide.with(imageView).load(FeatureCameraUtility.bitmapImage) .into(imageView)
-
-
         val bitmapImage = FeatureCameraUtility.bitmapImage
-//        var bitmapImage =
-//            BitmapFactory.decodeResource(resources, R.drawable.tes_image)
-
-        val newBitmapImage = Bitmap.createBitmap(
-            bitmapImage,
-            (bitmapImage.width * 0.25).toInt(),
-            0,
-            (bitmapImage.width) - ((bitmapImage.width * 0.25).toInt()),
-            (bitmapImage.height * 1).toInt(),
-        )
-        imageView.setImageBitmap(newBitmapImage)
-        imageView.rotation = FeatureCameraUtility.rotationDegree
+//        val newBitmapImage = Bitmap.createBitmap(
+//            bitmapImage,
+//            (bitmapImage.width * 0.25).toInt(),
+//            0,
+//            (bitmapImage.width) - ((bitmapImage.width * 0.25).toInt()),
+//            (bitmapImage.height * 1).toInt(),
+//        )
+        imageView.setImageBitmap(bitmapImage)
+//        imageView.rotation = FeatureCameraUtility.rotationDegree
     }
 }

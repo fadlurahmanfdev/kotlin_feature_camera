@@ -23,16 +23,30 @@ object FeatureCameraUtility {
     }
 
     fun getBitmapFromImageProxy(imageProxy: ImageProxy): Bitmap {
-        val planeProxy: ImageProxy.PlaneProxy = imageProxy.planes.first()
-        val buffer = planeProxy.buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer[bytes]
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        var bitmap = imageProxy.toBitmap()
+        bitmap = mirrorBitmapImage(bitmap)
+        bitmap = rotateImage(bitmap, imageProxy.imageInfo.rotationDegrees.toFloat())
+        return bitmap
     }
 
     fun mirrorBitmapImage(bitmapImage: Bitmap): Bitmap {
         val matrix = Matrix()
         matrix.preScale(1.0f, -1.0f)
+        return Bitmap.createBitmap(
+            bitmapImage,
+            0,
+            0,
+            bitmapImage.width,
+            bitmapImage.height,
+            matrix,
+            true
+        )
+    }
+
+    fun rotateImage(bitmapImage: Bitmap, rotation: Float): Bitmap {
+        val matrix = Matrix().apply {
+            postRotate(rotation)
+        }
         return Bitmap.createBitmap(
             bitmapImage,
             0,
