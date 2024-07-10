@@ -8,6 +8,7 @@ import androidx.camera.core.ImageProxy
 import java.io.ByteArrayOutputStream
 
 
+@Deprecated("")
 object FeatureCameraUtility {
     lateinit var bitmapImage: Bitmap
     lateinit var base64Image: String
@@ -24,14 +25,14 @@ object FeatureCameraUtility {
 
     fun getBitmapFromImageProxy(imageProxy: ImageProxy): Bitmap {
         var bitmap = imageProxy.toBitmap()
-        bitmap = mirrorBitmapImage(bitmap)
         bitmap = rotateImage(bitmap, imageProxy.imageInfo.rotationDegrees.toFloat())
+        bitmap = mirrorBitmapImage(bitmap)
         return bitmap
     }
 
     fun mirrorBitmapImage(bitmapImage: Bitmap): Bitmap {
         val matrix = Matrix()
-        matrix.preScale(1.0f, -1.0f)
+        matrix.preScale(-1.0f, 1.0f)
         return Bitmap.createBitmap(
             bitmapImage,
             0,

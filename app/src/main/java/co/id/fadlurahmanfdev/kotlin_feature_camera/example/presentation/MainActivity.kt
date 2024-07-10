@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
             "CAPTURE_CAMERA" -> {
-                val intent = Intent(this, SingleCameraActivity::class.java)
+                val intent = Intent(this, CaptureCameraActivity::class.java)
                 startActivity(intent)
             }
 

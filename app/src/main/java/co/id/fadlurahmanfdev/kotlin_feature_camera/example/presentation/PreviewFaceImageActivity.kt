@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
+import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
 
@@ -28,7 +29,7 @@ class PreviewFaceImageActivity : AppCompatActivity() {
 
         imageView = findViewById(R.id.previewImage)
 
-        val bitmapImage = FeatureCameraUtility.bitmapImage
+        val bitmapImage = CameraSharedModel.bitmapImage
 //        val newBitmapImage = Bitmap.createBitmap(
 //            bitmapImage,
 //            (bitmapImage.width * 0.25).toInt(),
