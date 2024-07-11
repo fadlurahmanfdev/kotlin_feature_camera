@@ -3,25 +3,28 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraV2Activity
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
-class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeListener {
+class FaceCameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.AnalyzeListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivStopCamera: ImageView
     lateinit var ivSwitch: ImageView
-    override var cameraFacing: FeatureCameraFacing = FeatureCameraFacing.FRONT
+    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_ANALYSIS
+    private val cameraRepository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
 
-    override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
+    override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_face_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -33,20 +36,17 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.Anal
         ivCamera = findViewById<ImageView>(R.id.iv_camera)
         ivStopCamera = findViewById<ImageView>(R.id.iv_stop_camera)
         ivSwitch = findViewById<ImageView>(R.id.iv_switch_camera)
-    }
 
-    override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
         ivFlash.setOnClickListener {
             enableTorch()
         }
 
         ivSwitch.setOnClickListener {
-            switchCamera()
+
         }
 
         ivCamera.setOnClickListener {
             startAnalyze { imageProxy ->
-                println("MASUK ANALYSIS IMAGE PROXY")
                 imageProxy.close()
             }
         }
@@ -57,8 +57,6 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.Anal
 
         addAnalyzeListener(this)
     }
-
-    override fun onAfterBindCameraToView() {}
 
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
@@ -72,9 +70,5 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.Anal
     override fun onStopAnalyze() {
         ivCamera.visibility = View.VISIBLE
         ivStopCamera.visibility = View.GONE
-    }
-
-    override fun isTorchChanged(isTorch: Boolean) {
-
     }
 }
