@@ -1,7 +1,6 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
@@ -9,14 +8,13 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraV2Activity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
-class CameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.AnalyzeListener,
-    BaseCameraV2Activity.CameraListener {
+class CameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener,
+    BaseCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
@@ -60,7 +58,7 @@ class CameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.Anal
         }
 
         addCameraListener(this)
-        addAnalyzeListener(this)
+        addCameraAnalysisListener(this)
     }
 
     /**

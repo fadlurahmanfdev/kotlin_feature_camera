@@ -1,8 +1,5 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +8,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
-import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
 
 class PreviewFaceImageActivity : AppCompatActivity() {

@@ -9,19 +9,17 @@ import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraV2Activity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
-import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
-class FaceCameraActivity : BaseCameraV2Activity(), BaseCameraV2Activity.CaptureListener,
-    BaseCameraV2Activity.CameraListener {
+class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
+    BaseCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView

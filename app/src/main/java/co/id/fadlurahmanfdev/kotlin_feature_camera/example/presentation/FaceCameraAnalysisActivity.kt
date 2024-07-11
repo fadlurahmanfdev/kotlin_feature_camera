@@ -11,10 +11,11 @@ import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraV2Activity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
-class FaceCameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.AnalyzeListener {
+class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
@@ -55,7 +56,7 @@ class FaceCameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.
             stopAnalyze()
         }
 
-        addAnalyzeListener(this)
+        addCameraAnalysisListener(this)
     }
 
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
