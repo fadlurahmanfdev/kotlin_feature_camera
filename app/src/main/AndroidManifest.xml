@@ -41,9 +41,6 @@
             android:name=".presentation.CaptureCameraActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.SingleCameraActivity"
-            android:exported="false" />
-        <activity
             android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>

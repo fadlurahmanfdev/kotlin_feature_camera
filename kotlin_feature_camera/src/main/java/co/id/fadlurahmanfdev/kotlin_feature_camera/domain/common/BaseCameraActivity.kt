@@ -1,6 +1,5 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,7 +7,6 @@ import androidx.camera.view.PreviewView
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
-import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.Analyzer
@@ -391,8 +389,8 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
             camera.cameraInfo.torchState.observe(this) { state ->
-                isTorchTurnOn = (state == TorchState.ON)
-                analyzeListener?.isTorchChanged(state == TorchState.ON)
+                _isTorchTurnOn = (state == TorchState.ON)
+                cameraListener?.onFlashTorchChanged(state == TorchState.ON)
             }
         } catch (e: Throwable) {
             Log.e(
@@ -412,16 +410,17 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
         return camera.cameraInfo.hasFlashUnit()
     }
 
-    private var isTorchTurnOn: Boolean = false
+    private var _isTorchTurnOn: Boolean = false
+    val isTorchTurnOn: Boolean get() = _isTorchTurnOn
     fun enableTorch() {
         if (cameraPurpose == FeatureCameraPurpose.IMAGE_ANALYSIS) {
             if (hasFlashUnit()) {
-                if (!isTorchTurnOn) {
-                    isTorchTurnOn = true
-                    camera.cameraControl.enableTorch(isTorchTurnOn)
+                if (!_isTorchTurnOn) {
+                    _isTorchTurnOn = true
+                    camera.cameraControl.enableTorch(_isTorchTurnOn)
                 } else {
-                    isTorchTurnOn = false
-                    camera.cameraControl.enableTorch(isTorchTurnOn)
+                    _isTorchTurnOn = false
+                    camera.cameraControl.enableTorch(_isTorchTurnOn)
                 }
             }
         } else {
@@ -435,7 +434,7 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
     override fun switchCameraFacing(cameraSelector: CameraSelector) {
         if (this.cameraSelector == cameraSelector) return
         if (cameraProvider.hasCamera(cameraSelector)) {
-            setFlashMode(FeatureCameraFlash.OFF)
+            setFlashModeCapture(FeatureCameraFlash.OFF)
             this.cameraSelector = cameraSelector
             bindCameraToView()
             return
@@ -444,6 +443,7 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
 
     interface CameraListener {
         fun onFlashModeChanged(flashMode: FeatureCameraFlash) {}
+        fun onFlashTorchChanged(isTorchTurnOn: Boolean) {}
     }
 
     private var cameraListener: CameraListener? = null
@@ -485,13 +485,15 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
             })
     }
 
-    override fun setFlashMode(flashMode: FeatureCameraFlash) {
-        if (!hasFlashUnit()) {
-            Log.d(BaseCameraV2Activity::class.java.simpleName, "camera didn't has flash unit")
-            return
+    override fun setFlashModeCapture(flashMode: FeatureCameraFlash) {
+        if (cameraPurpose == FeatureCameraPurpose.IMAGE_CAPTURE) {
+            if (!hasFlashUnit()) {
+                Log.d(BaseCameraV2Activity::class.java.simpleName, "camera didn't has flash unit")
+                return
+            }
+            imageCapture.flashMode = getImageCaptureFlashMode(flashMode)
+            cameraListener?.onFlashModeChanged(flashMode)
         }
-        imageCapture.flashMode = getImageCaptureFlashMode(flashMode)
-        cameraListener?.onFlashModeChanged(flashMode)
     }
 
     private fun getImageCaptureFlashMode(flashMode: FeatureCameraFlash): Int {
@@ -519,17 +521,25 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
     }
 
 
-    private var isStartAnalysis: Boolean = false
-    fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
-        if (isStartAnalysis) {
+    private var _isAnalyzing: Boolean = false
+    val isAnalyzing: Boolean get() = _isAnalyzing
+    override fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
+        if (_isAnalyzing) {
             Log.w(BaseCameraActivity::class.java.simpleName, "camera already analysis")
             return
         }
-        isStartAnalysis = true
+        _isAnalyzing = true
         addImageAnalysisAnalyzer(analyzer)
         useCaseGroup.useCases.add(imageAnalysis)
         bindCameraToView()
         analyzeListener?.onStartAnalyze()
+    }
+
+    override fun stopAnalyze() {
+        imageAnalysis.clearAnalyzer()
+        useCaseGroup.useCases.remove(imageAnalysis)
+        analyzeListener?.onStopAnalyze()
+        _isAnalyzing = false
     }
 
     private fun addImageAnalysisAnalyzer(analyzer: ImageAnalysis.Analyzer) {
@@ -544,17 +554,9 @@ abstract class BaseCameraV2Activity : AppCompatActivity(), BaseCameraCallBack {
         this.analyzer = analyzer
     }
 
-    fun stopAnalyze() {
-        imageAnalysis.clearAnalyzer()
-        useCaseGroup.useCases.remove(imageAnalysis)
-        isStartAnalysis = false
-        analyzeListener?.onStopAnalyze()
-    }
-
     interface AnalyzeListener {
         fun onStartAnalyze()
         fun onStopAnalyze()
-        fun isTorchChanged(isTorch: Boolean)
     }
 }
 
@@ -563,5 +565,9 @@ interface BaseCameraCallBack {
 
     // capture
     fun takePicture()
-    fun setFlashMode(flashMode: FeatureCameraFlash)
+    fun setFlashModeCapture(flashMode: FeatureCameraFlash)
+
+    // analysis
+    fun startAnalyze(analyzer: ImageAnalysis.Analyzer)
+    fun stopAnalyze()
 }

@@ -3,24 +3,28 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraV2Activity
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
-class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeListener {
+class CameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.AnalyzeListener,
+    BaseCameraV2Activity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
-    override var cameraFacing: FeatureCameraFacing = FeatureCameraFacing.FRONT
+    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_ANALYSIS
 
-    override fun onStartCreateBaseCamera(savedInstanceState: Bundle?) {
+    override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_single_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -31,42 +35,63 @@ class CameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeL
         ivFlash = findViewById<ImageView>(R.id.iv_flash)
         ivCamera = findViewById<ImageView>(R.id.iv_camera)
         ivSwitch = findViewById<ImageView>(R.id.iv_switch_camera)
-        addAnalyzeListener(this)
-    }
-
-    override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
         ivFlash.setOnClickListener {
             enableTorch()
         }
 
         ivSwitch.setOnClickListener {
-            switchCamera()
+            if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                switchCameraFacing(CameraSelector.DEFAULT_FRONT_CAMERA)
+            } else {
+                switchCameraFacing(CameraSelector.DEFAULT_BACK_CAMERA)
+            }
         }
 
         ivCamera.setOnClickListener {
-            startAnalyze { imageProxy ->
-                println("MASUK SINI IMAGE PROXY")
-                imageProxy.close()
+            println("MASUK IS ANALYZING: $isAnalyzing")
+            if (!isAnalyzing) {
+                startAnalyze { imageProxy ->
+                    println("MASUK SINI IMAGE PROXY")
+                    imageProxy.close()
+                }
+            } else {
+                stopAnalyze()
             }
         }
+
+        addCameraListener(this)
+        addAnalyzeListener(this)
     }
 
-    override fun onAfterBindCameraToView() {
-    }
-
+    /**
+     * Configures the camera preview by setting the surface provider.
+     *
+     * This function should be used to set the [Preview.setSurfaceProvider] with the value of [PreviewView.mSurfaceProvider].
+     */
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }
 
     override fun onStartAnalyze() {
-        ivCamera.visibility = View.INVISIBLE
+        println("MASUK START ANALYZE")
+        ivCamera.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.baseline_stop_circle_24
+            )
+        )
     }
 
     override fun onStopAnalyze() {
-        ivCamera.visibility = View.VISIBLE
+        println("MASUK STOP ANALYZE")
+        ivCamera.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.round_camera_alt_24))
     }
 
-    override fun isTorchChanged(isTorch: Boolean) {
-
+    override fun onFlashTorchChanged(isTorchTurnOn: Boolean) {
+        if (isTorchTurnOn) {
+            ivFlash.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.round_flash_on_24))
+        } else {
+            ivFlash.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.round_flash_off_24))
+        }
     }
 }
