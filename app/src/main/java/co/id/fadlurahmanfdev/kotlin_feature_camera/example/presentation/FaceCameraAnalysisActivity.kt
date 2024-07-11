@@ -1,20 +1,16 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFacing
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
-import co.id.fadlurahmanfdev.kotlin_feature_camera.other.utility.FeatureCameraUtility
 
 class FaceCameraAnalysisActivity : BaseCameraActivity(), BaseCameraActivity.AnalyzeListener {
     lateinit var cameraPreview: PreviewView

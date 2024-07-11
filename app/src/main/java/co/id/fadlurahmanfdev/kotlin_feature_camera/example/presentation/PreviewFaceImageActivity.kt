@@ -30,14 +30,6 @@ class PreviewFaceImageActivity : AppCompatActivity() {
         imageView = findViewById(R.id.previewImage)
 
         val bitmapImage = CameraSharedModel.bitmapImage
-//        val newBitmapImage = Bitmap.createBitmap(
-//            bitmapImage,
-//            (bitmapImage.width * 0.25).toInt(),
-//            0,
-//            (bitmapImage.width) - ((bitmapImage.width * 0.25).toInt()),
-//            (bitmapImage.height * 1).toInt(),
-//        )
         imageView.setImageBitmap(bitmapImage)
-//        imageView.rotation = FeatureCameraUtility.rotationDegree
     }
 }
