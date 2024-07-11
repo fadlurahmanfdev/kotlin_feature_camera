@@ -73,7 +73,6 @@ class CameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.Anal
     }
 
     override fun onStartAnalyze() {
-        println("MASUK START ANALYZE")
         ivCamera.setImageDrawable(
             ContextCompat.getDrawable(
                 this,
@@ -83,7 +82,6 @@ class CameraAnalysisActivity : BaseCameraV2Activity(), BaseCameraV2Activity.Anal
     }
 
     override fun onStopAnalyze() {
-        println("MASUK STOP ANALYZE")
         ivCamera.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.round_camera_alt_24))
     }
 
