@@ -1,8 +1,6 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
@@ -18,76 +16,52 @@ import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_ANALYSIS
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_CAPTURE
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraRatio
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing.BACK
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraFacing.FRONT
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose.IMAGE_ANALYSIS
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.type.FeatureCameraPurpose.IMAGE_CAPTURE
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.callback.BaseCameraCallBack
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
+import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class BaseCameraActivity : AppCompatActivity() {
-    lateinit var cameraExecutor: ExecutorService
-    lateinit var executor: Executor
-    lateinit var camera: Camera
-    lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
-    lateinit var cameraProvider: ProcessCameraProvider
-    var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    lateinit var imageCapture: ImageCapture
-    lateinit var imageAnalysis: ImageAnalysis
-    lateinit var analyzer: Analyzer
-    lateinit var preview: Preview
-    lateinit var cameraPurpose: FeatureCameraPurpose
-    lateinit var useCaseGroup: UseCaseGroup
-
-    val handler = Handler(Looper.getMainLooper())
+abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
+    private lateinit var cameraExecutor: ExecutorService
+    private lateinit var executor: Executor
+    private lateinit var camera: Camera
+    private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
+    private lateinit var cameraProvider: ProcessCameraProvider
+    abstract var cameraSelector: CameraSelector
+    private lateinit var imageCapture: ImageCapture
+    private lateinit var imageAnalysis: ImageAnalysis
+    private lateinit var analyzer: Analyzer
+    private lateinit var preview: Preview
+    abstract var cameraPurpose: FeatureCameraPurpose
+    open var cameraRatio: FeatureCameraRatio = FeatureCameraRatio.RATIO_16_9
+    private var cameraFlash: FeatureCameraFlash = FeatureCameraFlash.OFF
+    private lateinit var useCaseGroup: UseCaseGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        onStartCreateBaseCamera(savedInstanceState)
         executor = ContextCompat.getMainExecutor(this)
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        onSetCameraPurpose()
-        onSetCameraFacing()
         onCreateBaseCamera(savedInstanceState)
     }
 
-    /**
-     * [setCameraPurposeCapture] for purposes
-     * */
-    abstract fun onSetCameraPurpose()
-
-    fun setCameraPurposeCapture() {
-        cameraPurpose = IMAGE_CAPTURE
-    }
-
-    fun setCameraPurposeAnalysis(analyzer: ImageAnalysis.Analyzer) {
-        cameraPurpose = IMAGE_ANALYSIS
-        this.analyzer = analyzer
-    }
-
-    abstract fun onSetCameraFacing()
-
-    fun setCameraFacing(cameraFacing: FeatureCameraFacing) {
-        when (cameraFacing) {
-            FRONT -> {
-                cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-            }
-
-            BACK -> {
-                cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            }
-        }
-    }
-
-    abstract fun onStartCreateBaseCamera(savedInstanceState: Bundle?)
-
     abstract fun onCreateBaseCamera(savedInstanceState: Bundle?)
+
+    /**
+     * The place set of [Preview.setSurfaceProvider]
+     * the value is [PreviewView.mSurfaceProvider]
+     * */
+    abstract fun setSurfaceProviderBaseCamera(preview: Preview)
 
     override fun onResume() {
         super.onResume()
@@ -95,31 +69,33 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         onListenCameraProvider()
     }
 
-    open fun onListenCameraProvider() {
-        cameraProviderFuture.addListener({
-            onStartCamera()
-        }, executor)
+    private fun onListenCameraProvider() {
+        cameraProviderFuture.addListener(
+            {
+                onStartCamera()
+            },
+            executor,
+        )
     }
 
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
         val resolutionSelector = ResolutionSelector.Builder()
-            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+            .setAspectRatioStrategy(if (cameraRatio == FeatureCameraRatio.RATIO_4_3) AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY else AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .build()
-
 
         preview = Preview.Builder().apply {
             setResolutionSelector(resolutionSelector)
-        } .build().apply {
+        }.build().apply {
             setSurfaceProviderBaseCamera(this)
         }
 
         when (cameraPurpose) {
             IMAGE_CAPTURE -> {
-                imageCapture = ImageCapture.Builder().setFlashMode(ImageCapture.FLASH_MODE_ON)
+                imageCapture = ImageCapture.Builder()
+                    .setFlashMode(getImageCaptureFlashMode(cameraFlash))
                     .setResolutionSelector(resolutionSelector)
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-
                     .build()
                 useCaseGroup = UseCaseGroup.Builder().apply {
                     addUseCase(preview)
@@ -128,14 +104,6 @@ abstract class BaseCameraActivity : AppCompatActivity() {
             }
 
             IMAGE_ANALYSIS -> {
-                val resolution = ResolutionSelector.Builder()
-                    .setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
-                    .build()
-                imageAnalysis = ImageAnalysis.Builder()
-                    .setResolutionSelector(resolution)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                imageAnalysis.setAnalyzer(executor, analyzer)
                 useCaseGroup = UseCaseGroup.Builder().apply {
                     addUseCase(preview)
                 }.build()
@@ -148,7 +116,10 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         try {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
-            onBindCameraToView()
+            camera.cameraInfo.torchState.observe(this) { state ->
+                _isTorchTurnOn = (state == TorchState.ON)
+                _cameraListener?.onFlashTorchChanged(state == TorchState.ON)
+            }
         } catch (e: Throwable) {
             Log.e(
                 BaseCameraActivity::class.java.simpleName,
@@ -157,110 +128,150 @@ abstract class BaseCameraActivity : AppCompatActivity() {
         }
     }
 
-    abstract fun onBindCameraToView()
-
-    abstract fun setSurfaceProviderBaseCamera(preview: Preview)
-
     override fun onStop() {
         cameraProvider.unbindAll()
         cameraExecutor.shutdown()
         super.onStop()
     }
 
-    fun hasFlashUnit(): Boolean {
+    private fun hasFlashUnit(): Boolean {
         return camera.cameraInfo.hasFlashUnit()
     }
 
-    var isTorchTurnOn: Boolean = false
+    private var _isTorchTurnOn: Boolean = false
+    val isTorchTurnOn: Boolean get() = _isTorchTurnOn
     fun enableTorch() {
-        if (hasFlashUnit()) {
-            if (!isTorchTurnOn) {
-                isTorchTurnOn = true
-                camera.cameraControl.enableTorch(isTorchTurnOn)
-            } else {
-                isTorchTurnOn = false
-                camera.cameraControl.enableTorch(isTorchTurnOn)
+        if (cameraPurpose == FeatureCameraPurpose.IMAGE_ANALYSIS) {
+            if (hasFlashUnit()) {
+                if (!_isTorchTurnOn) {
+                    _isTorchTurnOn = true
+                    camera.cameraControl.enableTorch(_isTorchTurnOn)
+                } else {
+                    _isTorchTurnOn = false
+                    camera.cameraControl.enableTorch(_isTorchTurnOn)
+                }
             }
+        } else {
+            Log.w(
+                BaseCameraActivity::class.java.simpleName,
+                "unable to turn on torch, cameraPurpose should be ImageAnalysis"
+            )
         }
     }
 
-    fun switchCamera() {
-        if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-            val isHaveFrontCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
-            if (!isHaveFrontCamera) {
-                return
-            }
-            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-        } else if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
-            val isHaveBackCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
-            if (!isHaveBackCamera) {
-                return
-            }
-            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-        }
-
-        bindCameraToView()
-    }
-
-    private var captureListener: CaptureListener? = null
-
-    /**
-     * addCaptureListener inside function [onBindCameraToView]
-     * */
-    fun addCaptureListener(captureListener: CaptureListener) {
-        if (this.captureListener != null) return
-        this.captureListener = captureListener
-        camera.cameraInfo.torchState.observe(this) { state ->
-            isTorchTurnOn = (state == TorchState.ON)
-            this.captureListener?.isTorchChanged(state == TorchState.ON)
+    override fun switchCameraFacing(cameraSelector: CameraSelector) {
+        if (this.cameraSelector == cameraSelector) return
+        if (cameraProvider.hasCamera(cameraSelector)) {
+            setFlashModeCapture(FeatureCameraFlash.OFF)
+            this.cameraSelector = cameraSelector
+            bindCameraToView()
+            return
         }
     }
 
-    fun takePicture() {
-        imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedCallback() {
-            override fun onCaptureSuccess(image: ImageProxy) {
-                super.onCaptureSuccess(image)
-                Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
-                captureListener?.onCaptureSuccess(image)
-                image.close()
-            }
+    interface CameraListener {
+        fun onFlashModeChanged(flashMode: FeatureCameraFlash) {}
+        fun onFlashTorchChanged(isTorchTurnOn: Boolean) {}
+    }
 
-            override fun onError(exception: ImageCaptureException) {
-                super.onError(exception)
-                captureListener?.onCaptureError(
-                    FeatureCameraException(
-                        enumError = "ERR_GENERAL_CAPTURE",
-                        message = "An error occurred while capturing the image."
+    private var _cameraListener: CameraListener? = null
+    fun addCameraListener(listener: CameraListener) {
+        if (_cameraListener != null) return
+        _cameraListener = listener
+    }
+
+    // --- Capture Camera Method ---
+    private var _cameraCaptureListener: CameraCaptureListener? = null
+    fun addCaptureListener(listener: CameraCaptureListener) {
+        if (_cameraCaptureListener != null) return
+        _cameraCaptureListener = listener
+    }
+
+    override fun takePicture() {
+        imageCapture.takePicture(
+            executor,
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
+                    Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
+                    _cameraCaptureListener?.onCaptureSuccess(image, cameraSelector)
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                    Log.e(
+                        BaseCameraActivity::class.java.simpleName,
+                        "onCaptureError: ${exception.message}"
                     )
-                )
+                    _cameraCaptureListener?.onCaptureError(
+                        FeatureCameraException(
+                            enumError = "ERR_GENERAL_CAPTURE",
+                            message = "An error occurred while capturing the image."
+                        )
+                    )
+                }
+            })
+    }
+
+    override fun setFlashModeCapture(flashMode: FeatureCameraFlash) {
+        if (cameraPurpose == FeatureCameraPurpose.IMAGE_CAPTURE) {
+            if (!hasFlashUnit()) {
+                Log.d(BaseCameraActivity::class.java.simpleName, "camera didn't has flash unit")
+                return
             }
-        })
+            imageCapture.flashMode = getImageCaptureFlashMode(flashMode)
+            _cameraListener?.onFlashModeChanged(flashMode)
+        }
     }
 
-    private var analyzeListener: AnalyzeListener? = null
-    fun addAnalyzeListener(analyzeListener: AnalyzeListener) {
-        if (this.analyzeListener != null) return
-        this.analyzeListener = analyzeListener
+    private fun getImageCaptureFlashMode(flashMode: FeatureCameraFlash): Int {
+        return when (flashMode) {
+            FeatureCameraFlash.ON -> ImageCapture.FLASH_MODE_ON
+            FeatureCameraFlash.AUTO -> ImageCapture.FLASH_MODE_AUTO
+            else -> ImageCapture.FLASH_MODE_OFF
+        }
     }
 
 
-    fun startAnalyze() {
+    // --- Analyze Camera Method ---
+    private var _cameraAnalysisListener: CameraAnalysisListener? = null
+    fun addCameraAnalysisListener(listener: CameraAnalysisListener) {
+        if (_cameraAnalysisListener != null) return
+        _cameraAnalysisListener = listener
+    }
+
+
+    private var _isAnalyzing: Boolean = false
+    val isAnalyzing: Boolean get() = _isAnalyzing
+    override fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
+        if (_isAnalyzing) {
+            Log.w(BaseCameraActivity::class.java.simpleName, "camera already analysis")
+            return
+        }
+        _isAnalyzing = true
+        addImageAnalysisAnalyzer(analyzer)
         useCaseGroup.useCases.add(imageAnalysis)
         bindCameraToView()
-        analyzeListener?.onStartAnalyze()
+        _cameraAnalysisListener?.onStartAnalyze()
     }
 
-    fun stopAnalyze() {
+    override fun stopAnalyze() {
         imageAnalysis.clearAnalyzer()
+        useCaseGroup.useCases.remove(imageAnalysis)
+        _cameraAnalysisListener?.onStopAnalyze()
+        _isAnalyzing = false
     }
 
-    interface CaptureListener {
-        fun onCaptureSuccess(imageProxy: ImageProxy)
-        fun onCaptureError(exception: FeatureCameraException)
-        fun isTorchChanged(isTorch: Boolean)
-    }
-
-    interface AnalyzeListener {
-        fun onStartAnalyze()
+    private fun addImageAnalysisAnalyzer(analyzer: ImageAnalysis.Analyzer) {
+        val resolution = ResolutionSelector.Builder()
+            .setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
+            .build()
+        imageAnalysis = ImageAnalysis.Builder()
+            .setResolutionSelector(resolution)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+        imageAnalysis.setAnalyzer(executor, analyzer)
+        this.analyzer = analyzer
     }
 }
+

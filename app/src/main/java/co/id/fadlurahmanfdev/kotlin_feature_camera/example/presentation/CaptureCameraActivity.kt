@@ -7,8 +7,10 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
 import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
@@ -18,18 +20,20 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCapture
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 
-class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
-    BaseCameraActivity.CameraListener {
+class CaptureCameraActivity : BaseCameraActivity(),
+    CameraCaptureListener, BaseCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
-    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_CAPTURE
-    private val cameraRepository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
+    private var currentFlashMode: FeatureCameraFlash = FeatureCameraFlash.OFF
+    private var currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private var repository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
 
     override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_face_camera)
+        setContentView(R.layout.activity_single_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -39,11 +43,22 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
         ivFlash = findViewById<ImageView>(R.id.iv_flash)
         ivCamera = findViewById<ImageView>(R.id.iv_camera)
         ivSwitch = findViewById<ImageView>(R.id.iv_switch_camera)
+
         ivFlash.setOnClickListener {
-            enableTorch()
+            if (currentFlashMode == FeatureCameraFlash.OFF) {
+                setFlashModeCapture(FeatureCameraFlash.ON)
+            } else {
+                setFlashModeCapture(FeatureCameraFlash.OFF)
+            }
         }
 
-        ivSwitch.setOnClickListener {}
+        ivSwitch.setOnClickListener {
+            if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                switchCameraFacing(CameraSelector.DEFAULT_FRONT_CAMERA)
+            } else {
+                switchCameraFacing(CameraSelector.DEFAULT_BACK_CAMERA)
+            }
+        }
 
         ivCamera.setOnClickListener {
             takePicture()
@@ -58,10 +73,10 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
     }
 
     override fun onCaptureSuccess(imageProxy: ImageProxy, cameraSelector: CameraSelector) {
-        CameraSharedModel.bitmapImage = cameraRepository.getBitmapFromImageProxy(imageProxy)
+        CameraSharedModel.bitmapImage = repository.getBitmapFromImageProxy(imageProxy)
         if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
             CameraSharedModel.bitmapImage =
-                cameraRepository.mirrorHorizontalBitmap(CameraSharedModel.bitmapImage)
+                repository.mirrorHorizontalBitmap(CameraSharedModel.bitmapImage)
         }
         val intent = Intent(this, PreviewFaceImageActivity::class.java)
         startActivity(intent)
@@ -69,5 +84,29 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
 
     override fun onCaptureError(exception: FeatureCameraException) {
         println("MASUK ERROR CAPTURE: ${exception.enumError}")
+    }
+
+    override fun onFlashModeChanged(flashMode: FeatureCameraFlash) {
+        super.onFlashModeChanged(flashMode)
+        currentFlashMode = flashMode
+        when (currentFlashMode) {
+            FeatureCameraFlash.ON, FeatureCameraFlash.AUTO -> {
+                ivFlash.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.round_flash_on_24
+                    )
+                )
+            }
+
+            else -> {
+                ivFlash.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.round_flash_off_24
+                    )
+                )
+            }
+        }
     }
 }

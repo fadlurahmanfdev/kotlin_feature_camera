@@ -1,4 +1,4 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.data.type
+package co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums
 
 enum class FeatureCameraPurpose {
     /**

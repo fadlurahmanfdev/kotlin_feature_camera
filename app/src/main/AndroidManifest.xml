@@ -23,6 +23,9 @@
             android:name=".presentation.PreviewFaceImageActivity"
             android:exported="false" />
         <activity
+            android:name=".presentation.FaceCameraAnalysisActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.FaceCameraActivity"
             android:exported="false" />
         <activity
@@ -35,7 +38,7 @@
             android:name=".presentation.CameraAnalysisActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.SingleCameraActivity"
+            android:name=".presentation.CaptureCameraActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.MainActivity"
