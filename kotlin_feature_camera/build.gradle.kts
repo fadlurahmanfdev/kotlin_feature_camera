@@ -1,11 +1,15 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("maven-publish")
+
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 android {
-    namespace = "co.id.fadlurahmanfdev.kotlin_feature_camera"
+    namespace = "com.fadlurahmanfdev.kotlin_feature_camera"
     compileSdk = 34
 
     defaultConfig {
@@ -25,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 }
 
@@ -54,13 +58,46 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release"){
-            groupId = "co.id.fadlurahmanfdev"
+            groupId = "com.fadlurahmanfdev"
             artifactId = "kotlin_feature_camera"
-            version = "0.0.2"
+            version = "0.0.1-BETA"
 
             afterEvaluate {
                 from(components["release"])
             }
+        }
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    coordinates("com.fadlurahmanfdev", "kotlin_feature_camera", "0.0.1-beta")
+
+    pom {
+        name.set("Kotlin Library Feature Cmaera")
+        description.set("A comprehensive camera library for Android, designed to simplified camera usage.")
+        inceptionYear.set("2024")
+        url.set("https://github.com/fadlurahmanfdev/kotlin_feature_camera/")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("fadlurahmanfdev")
+                name.set("Taufik Fadlurahman Fajari")
+                url.set("https://github.com/fadlurahmanfdev/")
+            }
+        }
+        scm {
+            url.set("https://github.com/fadlurahmanfdev/kotlin_feature_camera/")
+            connection.set("scm:git:git://github.com/fadlurahmanfdev/kotlin_feature_camera.git")
+            developerConnection.set("scm:git:ssh://git@github.com/fadlurahmanfdev/kotlin_feature_camera.git")
         }
     }
 }
