@@ -22,7 +22,7 @@ class CircleProgressOverlay @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var attributes: TypedArray
+    private var attributes: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressOverlay)
 
     private var progress: Float
 
@@ -37,7 +37,6 @@ class CircleProgressOverlay @JvmOverloads constructor(
     private var opacity: Float
 
     init {
-        attributes = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressOverlay)
 
         // Init Position
         circleRadiusRatio =
