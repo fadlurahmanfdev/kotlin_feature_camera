@@ -5,18 +5,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.SingleCameraActivity">
+    tools:context=".presentation.FaceCameraActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
-        app:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <co.id.fadlurahmanfdev.kotlin_feature_camera.presentation.SelfieOverlayView
+    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlay
+        android:id="@+id/selfieOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_opacity_20" />
+        app:progress="1.0"/>
 
     <LinearLayout
         android:id="@+id/ll_camera_controller"

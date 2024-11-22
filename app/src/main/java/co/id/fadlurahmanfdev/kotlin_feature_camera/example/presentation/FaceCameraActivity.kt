@@ -17,6 +17,7 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActiv
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
+import com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlay
 
 class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
     BaseCameraActivity.CameraListener {
@@ -24,6 +25,7 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
+    lateinit var selfieOverlayView: CircleProgressOverlay
     override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_CAPTURE
     private val cameraRepository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
@@ -39,6 +41,8 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
         ivFlash = findViewById<ImageView>(R.id.iv_flash)
         ivCamera = findViewById<ImageView>(R.id.iv_camera)
         ivSwitch = findViewById<ImageView>(R.id.iv_switch_camera)
+        selfieOverlayView = findViewById(R.id.selfieOverlay)
+
         ivFlash.setOnClickListener {
             enableTorch()
         }

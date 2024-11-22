@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="progress" format="float" />
+    <attr name="circleRadiusRatio" format="float" />
+    <attr name="centerY" format="dimension" />
+
+    <declare-styleable name="CircleProgressOverlay">
+        <!-- Specifies the progress for circle progress painter, minimum is 0.0, max is 1.0. -->
+        <attr name="progress" />
+        <attr name="circleRadiusRatio" />
+        <attr name="centerY" />
+    </declare-styleable>
+
+</resources>
