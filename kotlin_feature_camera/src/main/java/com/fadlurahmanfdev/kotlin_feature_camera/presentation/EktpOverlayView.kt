@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 //  https://stackoverflow.com/questions/18387814/drawing-on-canvas-porterduff-mode-clear-draws-black-why,
 //  https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.budiharso.info%2F2016%2F01%2F09%2FCreate-hole-in-android-view%2F&psig=AOvVaw1H6CAwEK6lTQtNTQQf4gRg&ust=1674365656463000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCJjzlKP41_wCFQAAAAAdAAAAABAE
 // ]
+@Deprecated(message = "use CircleProgressOverlay")
 class EktpOverlayView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     @RequiresApi(Build.VERSION_CODES.Q)

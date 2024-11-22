@@ -4,12 +4,18 @@
     <attr name="progress" format="float" />
     <attr name="circleRadiusRatio" format="float" />
     <attr name="centerY" format="dimension" />
+    <attr name="opacity" format="float" />
+    <attr name="progressColor" format="color" />
 
     <declare-styleable name="CircleProgressOverlay">
         <!-- Specifies the progress for circle progress painter, minimum is 0.0, max is 1.0. -->
         <attr name="progress" />
         <attr name="circleRadiusRatio" />
         <attr name="centerY" />
+        <attr name="strokeWidth" />
+        <attr name="backgroundColor" />
+        <attr name="opacity" />
+        <attr name="progressColor" />
     </declare-styleable>
 
 </resources>

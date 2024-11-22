@@ -5,8 +5,17 @@ import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.ColorRes
 import com.fadlurahmanfdev.kotlin_feature_camera.R
 
+// Reference: [
+// https://medium.com/@rey5137/let-s-drill-a-hole-in-your-view-e7f53fa23376
+// https://stackoverflow.com/questions/18387814/drawing-on-canvas-porterduff-mode-clear-draws-black-why,
+// https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.budiharso.info%2F2016%2F01%2F09%2FCreate-hole-in-android-view%2F&psig=AOvVaw1H6CAwEK6lTQtNTQQf4gRg&ust=1674365656463000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCJjzlKP41_wCFQAAAAAdAAAAABAE
+// ]
+/**
+ * Circle Progress Overlay, Usually use for selfie purpose
+ * */
 class CircleProgressOverlay @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -17,55 +26,82 @@ class CircleProgressOverlay @JvmOverloads constructor(
 
     private var progress: Float
 
-    var circleRadiusRatio: Float
-    var centerY: Float
+    // Position Related
+    private var circleRadiusRatio: Float
+    private var centerY: Float
+
+    // UI Related
+    private var strokeWidth: Float
+    private var progressColor: Int
+    private var backgroundColor: Int
+    private var opacity: Float
 
     init {
         attributes = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressOverlay)
 
+        // Init Position
         circleRadiusRatio =
             attributes.getFloat(R.styleable.CircleProgressOverlay_circleRadiusRatio, -1.0f)
-
         centerY =
             attributes.getDimension(R.styleable.CircleProgressOverlay_centerY, -1.0f)
-//        if (centerY == -1.0f) {
-//            centerY = height * 0.1f + circleRadius
-//        }
-//        this.centerY = centerY
-//
-//        setCenterYFromParameter(centerY)
 
+        // UI Related
+        strokeWidth =
+            attributes.getFloat(R.styleable.CircleProgressOverlay_strokeWidth, 5.0f)
+        progressColor =
+            attributes.getColor(R.styleable.CircleProgressOverlay_progressColor, Color.GREEN)
+        backgroundColor =
+            attributes.getColor(R.styleable.CircleProgressOverlay_backgroundColor, Color.BLACK)
+        opacity = attributes.getFloat(R.styleable.CircleProgressOverlay_opacity, 0.3f)
+        setOpacityValue(opacity)
 
         progress = attributes.getFloat(R.styleable.CircleProgressOverlay_progress, 4.0f)
-        setProgress(progress)
+        setProgressValue(progress)
     }
 
-    private val overlayPaint = Paint().apply {
-        style = Paint.Style.FILL
-        color = Color.BLACK
-        alpha = (0.3 * 255).toInt() // 30% opacity
-    }
+    private val overlayPaint = Paint()
 
-    private val strokePaint = Paint().apply {
-        style = Paint.Style.STROKE
-        strokeWidth = 5f // Stroke thickness
-        color = Color.WHITE // White color for the progress arc
-        isAntiAlias = true
-    }
+    private val strokePaint = Paint()
+    private val strokePaintProgress = Paint()
 
-    private fun setProgress(progress: Float) {
-        if (progress >= 1.0f) {
-            this.progress = 4.0f
-        } else if (progress < 0.0f) {
-            this.progress = 0.0f
+    private fun setProgressValue(value: Float) {
+        if (value >= 1.0f) {
+            progress = 4.0f
+        } else if (value < 0.0f) {
+            progress = 0.0f
         } else {
-            this.progress = progress * 4.0f
+            progress = value * 4.0f
         }
         invalidate()
     }
 
-    private fun setCenterYFromParameter(centerY: Float) {
-        this.centerY = centerY
+    private fun setCircleRadiusRatioValue(value: Float) {
+        circleRadiusRatio = value
+        invalidate()
+    }
+
+    private fun setCenterYValue(value: Float) {
+        centerY = value
+        invalidate()
+    }
+
+    private fun setStrokeWidthValue(value: Float) {
+        strokeWidth = value
+        invalidate()
+    }
+
+    private fun setProgressColor(@ColorRes value: Int) {
+        progressColor = value
+    }
+
+    private fun setOpacityValue(value: Float) {
+        if (value >= 1.0f) {
+            opacity = 1.0f
+        } else if (value < 0.0f) {
+            opacity = 0.0f
+        } else {
+            opacity = value
+        }
     }
 
     private fun getCircleRadiusBasedOnCircleRadiusRatio(
@@ -86,8 +122,11 @@ class CircleProgressOverlay @JvmOverloads constructor(
 
         // Step 1: Draw the semi-transparent black overlay with a transparent circle
         val centerX = width / 2f
-        val circleRadius = getCircleRadiusBasedOnCircleRadiusRatio(width = width, circleRadiusRatio = circleRadiusRatio)
-        if (centerY == -1.0f){
+        val circleRadius = getCircleRadiusBasedOnCircleRadiusRatio(
+            width = width,
+            circleRadiusRatio = circleRadiusRatio
+        )
+        if (centerY == -1.0f) {
             centerY = height * 0.15f + circleRadius
         }
 
@@ -104,9 +143,32 @@ class CircleProgressOverlay @JvmOverloads constructor(
             addRect(0f, 0f, width.toFloat(), height.toFloat(), Path.Direction.CW)
             fillType = Path.FillType.EVEN_ODD
         }
+
+        overlayPaint.apply {
+            style = Paint.Style.FILL
+            color = backgroundColor
+            alpha = (opacity * 255).toInt() // Set Opacity in Percent
+        }
         canvas.drawPath(overlayPath, overlayPaint)
 
         // Step 2: Draw the progress arc
+
+        // Set Border Color of Circle Overlay
+        strokePaint.apply {
+            style = Paint.Style.STROKE
+            strokeWidth = this@CircleProgressOverlay.strokeWidth // Stroke thickness
+            color = Color.WHITE
+            isAntiAlias = true
+        }
+
+        // Set Color of Progress
+        strokePaintProgress.apply {
+            style = Paint.Style.STROKE
+            strokeWidth = this@CircleProgressOverlay.strokeWidth // Stroke thickness
+            color = progressColor
+            isAntiAlias = true
+        }
+
         val arcRect = RectF(
             centerX - circleRadius,
             centerY - circleRadius,
@@ -117,9 +179,17 @@ class CircleProgressOverlay @JvmOverloads constructor(
         canvas.drawArc(
             arcRect,
             -90f, // Start at the top (-90 degrees)
-            progress * 90f, // Sweep angle (quarter circle)
+            4.0f * 90f, // Full Circle for Circle Overlay
             false,
             strokePaint
+        )
+
+        canvas.drawArc(
+            arcRect,
+            -90f, // Start at the top (-90 degrees)
+            progress * 90f, // Sweep angle (quarter circle)
+            false,
+            strokePaintProgress
         )
     }
 }
