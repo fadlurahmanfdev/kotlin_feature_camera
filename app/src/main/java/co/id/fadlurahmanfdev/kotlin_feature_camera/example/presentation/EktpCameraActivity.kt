@@ -3,6 +3,7 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
@@ -18,7 +19,7 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCapture
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 
-class EktpCameraActivity : BaseCameraActivity(), CameraCaptureListener,
+class EktpCameraActivity : BaseCameraActivity(),
     BaseCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
@@ -44,18 +45,11 @@ class EktpCameraActivity : BaseCameraActivity(), CameraCaptureListener,
         ivSwitch.setOnClickListener {}
 
         ivCamera.setOnClickListener {
-            takePicture()
-        }
-
-        addCameraListener(this)
-        addCaptureListener(this)
-    }
-
-    override fun setSurfaceProviderBaseCamera(preview: Preview) {
-        preview.setSurfaceProvider(cameraPreview.surfaceProvider)
-    }
-
-    override fun onCaptureSuccess(imageProxy: ImageProxy, cameraSelector: CameraSelector) {
+            takePicture(object : CameraCaptureListener {
+                override fun onCaptureSuccess(
+                    imageProxy: ImageProxy,
+                    cameraSelector: CameraSelector
+                ) {
 //        val buffer = imageProxy.planes[0].buffer
 //        val bytes = ByteArray(buffer.capacity())
 //        buffer[bytes]
@@ -68,12 +62,24 @@ class EktpCameraActivity : BaseCameraActivity(), CameraCaptureListener,
 //            startActivity(intent)
 //        }
 
-        val bitmap = cameraRepository.getBitmapFromImageProxy(imageProxy)
-        CameraSharedModel.bitmapImage = bitmap
-        val intent = Intent(this, PreviewEKTPImageActivity::class.java)
-            startActivity(intent)
+                    val bitmap = cameraRepository.getBitmapFromImageProxy(imageProxy)
+                    CameraSharedModel.bitmapImage = bitmap
+                    val intent =
+                        Intent(this@EktpCameraActivity, PreviewEKTPImageActivity::class.java)
+                    startActivity(intent)
 
+                }
+
+                override fun onCaptureError(exception: FeatureCameraException) {
+                    Toast.makeText(this@EktpCameraActivity, "Capture Error: ${exception.enumError}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
+        addCameraListener(this)
     }
 
-    override fun onCaptureError(exception: FeatureCameraException) {}
+    override fun setSurfaceProviderBaseCamera(preview: Preview) {
+        preview.setSurfaceProvider(cameraPreview.surfaceProvider)
+    }
 }

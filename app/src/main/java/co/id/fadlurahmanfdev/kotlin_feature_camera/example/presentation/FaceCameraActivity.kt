@@ -3,6 +3,7 @@ package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
@@ -17,15 +18,15 @@ import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActiv
 import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
-import com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlay
+import com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlayView
 
-class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
+class FaceCameraActivity : BaseCameraActivity(),
     BaseCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
-    lateinit var selfieOverlayView: CircleProgressOverlay
+    lateinit var selfieOverlayView: CircleProgressOverlayView
     override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_CAPTURE
     private val cameraRepository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
@@ -50,28 +51,32 @@ class FaceCameraActivity : BaseCameraActivity(), CameraCaptureListener,
         ivSwitch.setOnClickListener {}
 
         ivCamera.setOnClickListener {
-            takePicture()
+            takePicture(object : CameraCaptureListener {
+                override fun onCaptureSuccess(
+                    imageProxy: ImageProxy,
+                    cameraSelector: CameraSelector
+                ) {
+                    CameraSharedModel.bitmapImage =
+                        cameraRepository.getBitmapFromImageProxy(imageProxy)
+                    if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                        CameraSharedModel.bitmapImage =
+                            cameraRepository.mirrorHorizontalBitmap(CameraSharedModel.bitmapImage)
+                    }
+                    val intent =
+                        Intent(this@FaceCameraActivity, PreviewFaceImageActivity::class.java)
+                    startActivity(intent)
+                }
+
+                override fun onCaptureError(exception: FeatureCameraException) {
+                    Toast.makeText(this@FaceCameraActivity, "Capture Error: ${exception.enumError}", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         addCameraListener(this)
-        addCaptureListener(this)
     }
 
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
-    }
-
-    override fun onCaptureSuccess(imageProxy: ImageProxy, cameraSelector: CameraSelector) {
-        CameraSharedModel.bitmapImage = cameraRepository.getBitmapFromImageProxy(imageProxy)
-        if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
-            CameraSharedModel.bitmapImage =
-                cameraRepository.mirrorHorizontalBitmap(CameraSharedModel.bitmapImage)
-        }
-        val intent = Intent(this, PreviewFaceImageActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun onCaptureError(exception: FeatureCameraException) {
-        println("MASUK ERROR CAPTURE: ${exception.enumError}")
     }
 }

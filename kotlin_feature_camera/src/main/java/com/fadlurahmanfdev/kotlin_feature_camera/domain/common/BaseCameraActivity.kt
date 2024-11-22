@@ -180,21 +180,14 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
         _cameraListener = listener
     }
 
-    // --- Capture Camera Method ---
-    private var _cameraCaptureListener: CameraCaptureListener? = null
-    fun addCaptureListener(listener: CameraCaptureListener) {
-        if (_cameraCaptureListener != null) return
-        _cameraCaptureListener = listener
-    }
-
-    override fun takePicture() {
+    override fun takePicture(listener: CameraCaptureListener) {
         imageCapture.takePicture(
             executor,
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
                     Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
-                    _cameraCaptureListener?.onCaptureSuccess(image, cameraSelector)
+                    listener.onCaptureSuccess(image, cameraSelector)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -203,7 +196,7 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
                         BaseCameraActivity::class.java.simpleName,
                         "onCaptureError: ${exception.message}"
                     )
-                    _cameraCaptureListener?.onCaptureError(
+                    listener.onCaptureError(
                         FeatureCameraException(
                             enumError = "ERR_GENERAL_CAPTURE",
                             message = "An error occurred while capturing the image."

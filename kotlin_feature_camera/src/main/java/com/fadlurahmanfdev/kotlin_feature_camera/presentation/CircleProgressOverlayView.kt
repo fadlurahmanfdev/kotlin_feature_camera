@@ -16,13 +16,13 @@ import com.fadlurahmanfdev.kotlin_feature_camera.R
 /**
  * Circle Progress Overlay, Usually use for selfie purpose
  * */
-class CircleProgressOverlay @JvmOverloads constructor(
+class CircleProgressOverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var attributes: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressOverlay)
+    private var attributes: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressOverlayView)
 
     private var progress: Float
 
@@ -40,21 +40,21 @@ class CircleProgressOverlay @JvmOverloads constructor(
 
         // Init Position
         circleRadiusRatio =
-            attributes.getFloat(R.styleable.CircleProgressOverlay_circleRadiusRatio, -1.0f)
+            attributes.getFloat(R.styleable.CircleProgressOverlayView_circleRadiusRatio, -1.0f)
         centerY =
-            attributes.getDimension(R.styleable.CircleProgressOverlay_centerY, -1.0f)
+            attributes.getDimension(R.styleable.CircleProgressOverlayView_centerY, -1.0f)
 
         // UI Related
         strokeWidth =
-            attributes.getFloat(R.styleable.CircleProgressOverlay_strokeWidth, 5.0f)
+            attributes.getDimension(R.styleable.CircleProgressOverlayView_strokeWidth, 5.0f)
         progressColor =
-            attributes.getColor(R.styleable.CircleProgressOverlay_progressColor, Color.GREEN)
+            attributes.getColor(R.styleable.CircleProgressOverlayView_progressColor, Color.GREEN)
         backgroundColor =
-            attributes.getColor(R.styleable.CircleProgressOverlay_backgroundColor, Color.BLACK)
-        opacity = attributes.getFloat(R.styleable.CircleProgressOverlay_opacity, 0.3f)
+            attributes.getColor(R.styleable.CircleProgressOverlayView_backgroundColor, Color.BLACK)
+        opacity = attributes.getFloat(R.styleable.CircleProgressOverlayView_opacity, 0.3f)
         setOpacityValue(opacity)
 
-        progress = attributes.getFloat(R.styleable.CircleProgressOverlay_progress, 4.0f)
+        progress = attributes.getFloat(R.styleable.CircleProgressOverlayView_progress, 0.0f)
         setProgressValue(progress)
     }
 
@@ -91,6 +91,7 @@ class CircleProgressOverlay @JvmOverloads constructor(
 
     private fun setProgressColor(@ColorRes value: Int) {
         progressColor = value
+        invalidate()
     }
 
     private fun setOpacityValue(value: Float) {
@@ -101,6 +102,7 @@ class CircleProgressOverlay @JvmOverloads constructor(
         } else {
             opacity = value
         }
+        invalidate()
     }
 
     private fun getCircleRadiusBasedOnCircleRadiusRatio(
@@ -155,7 +157,7 @@ class CircleProgressOverlay @JvmOverloads constructor(
         // Set Border Color of Circle Overlay
         strokePaint.apply {
             style = Paint.Style.STROKE
-            strokeWidth = this@CircleProgressOverlay.strokeWidth // Stroke thickness
+            strokeWidth = this@CircleProgressOverlayView.strokeWidth // Stroke thickness
             color = Color.WHITE
             isAntiAlias = true
         }
@@ -163,7 +165,7 @@ class CircleProgressOverlay @JvmOverloads constructor(
         // Set Color of Progress
         strokePaintProgress.apply {
             style = Paint.Style.STROKE
-            strokeWidth = this@CircleProgressOverlay.strokeWidth // Stroke thickness
+            strokeWidth = this@CircleProgressOverlayView.strokeWidth // Stroke thickness
             color = progressColor
             isAntiAlias = true
         }

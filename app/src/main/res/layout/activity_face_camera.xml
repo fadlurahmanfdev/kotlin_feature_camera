@@ -12,14 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlay
+    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlayView
         android:id="@+id/selfieOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:strokeWidth="5.0"
+        app:strokeWidth="10dp"
         app:backgroundColor="@color/black"
-        app:opacity="0.2"
-        app:progress="0.5"/>
+        app:opacity="0.2" />
 
     <LinearLayout
         android:id="@+id/ll_camera_controller"

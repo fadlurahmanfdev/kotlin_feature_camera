@@ -1,4 +1,4 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.presentation
+package com.fadlurahmanfdev.kotlin_feature_camera.presentation
 
 import android.content.Context
 import android.graphics.*
@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 /**
  * add background for see the result
  * */
+@Deprecated(message = "use CircleProgressOverlay")
 class SelfieOverlayView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     @RequiresApi(Build.VERSION_CODES.Q)

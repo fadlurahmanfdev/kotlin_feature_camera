@@ -18,10 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <co.id.fadlurahmanfdev.kotlin_feature_camera.presentation.EktpOverlayView
+    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.RectangleOverlayView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintDimensionRatio="3:4"
-        android:background="@color/white"/>
+        app:strokeWidth="5dp"
+        app:yTop="100dp"
+        app:opacity="0.3"
+        app:widthLengthRatio="0.9"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
