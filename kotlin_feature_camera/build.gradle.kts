@@ -52,7 +52,9 @@ dependencies {
     api("androidx.camera:camera-lifecycle:${camerax_version}")
     api("androidx.camera:camera-view:${camerax_version}")
 
-    api("de.hdodenhof:circleimageview:3.1.0")
+//    api("de.hdodenhof:circleimageview:3.1.0")
+
+    api("com.ashampoo:kim:0.20")
 }
 
 publishing {

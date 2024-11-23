@@ -98,18 +98,23 @@ class RectangleOverlayView @JvmOverloads constructor(
             yBottom
         )
 
-        val overlayPath = Path().apply {
-            addRect(frame, Path.Direction.CW)
-            addRect(0f, 0f, width.toFloat(), height.toFloat(), Path.Direction.CW)
-            fillType = Path.FillType.EVEN_ODD
-        }
-
-        val paint = Paint().apply {
+        val overlayPaint = Paint().apply {
             style = Paint.Style.FILL
             color = backgroundColor
             alpha = (opacity * 255).toInt() // Set Opacity in Percent
+            isAntiAlias = true
         }
-        canvas.drawPath(overlayPath, paint)
+
+        // Create the path for the overlay with a transparent rectangle
+        val path = Path().apply {
+            addRect(frame, Path.Direction.CW) // Full canvas
+            addRect(0.0f, 0.0f, width.toFloat(), height.toFloat(), Path.Direction.CCW) // Inner transparent rectangle
+            fillType = Path.FillType.EVEN_ODD
+        }
+
+        // Draw the overlay
+        canvas.drawPath(path, overlayPaint)
+
 
         val strokePaint = Paint().apply {
             isAntiAlias = true
@@ -117,23 +122,34 @@ class RectangleOverlayView @JvmOverloads constructor(
             strokeWidth = this@RectangleOverlayView.strokeWidth
             style = Paint.Style.STROKE
         }
-        val strokePath = Path().apply {
-            addRoundRect(
-                frame,
-                viewportCornerRadius.toFloat(),
-                viewportCornerRadius.toFloat(),
-                Path.Direction.CW
-            )
-        }
-        canvas.drawPath(strokePath, strokePaint)
+        canvas.drawRect(frame, strokePaint)
 
 
-        val eraser = Paint()
-        eraser.isAntiAlias = true
-        eraser.style = Paint.Style.FILL
-        eraser.color = Color.BLACK
-        eraser.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        canvas.drawPath(strokePath, eraser)
+//        canvas.drawPath(overlayPath, paint)
+//
+//        val strokePaint = Paint().apply {
+//            isAntiAlias = true
+//            color = Color.WHITE
+//            strokeWidth = this@RectangleOverlayView.strokeWidth
+//            style = Paint.Style.STROKE
+//        }
+//        val strokePath = Path().apply {
+//            addRoundRect(
+//                frame,
+//                viewportCornerRadius.toFloat(),
+//                viewportCornerRadius.toFloat(),
+//                Path.Direction.CW
+//            )
+//        }
+//        canvas.drawRect(frame, strokePaint)
+//
+//
+//        val eraser = Paint()
+//        eraser.isAntiAlias = true
+//        eraser.style = Paint.Style.FILL
+//        eraser.color = Color.BLACK
+//        eraser.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+//        canvas.drawPath(strokePath, eraser)
     }
 
     override fun onDraw(canvas: Canvas) {

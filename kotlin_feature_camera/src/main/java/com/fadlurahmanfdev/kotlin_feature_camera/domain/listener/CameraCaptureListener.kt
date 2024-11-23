@@ -1,8 +1,8 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener
+package com.fadlurahmanfdev.kotlin_feature_camera.domain.listener
 
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
+import com.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
 
 interface CameraCaptureListener {
     /**

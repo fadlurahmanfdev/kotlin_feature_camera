@@ -8,11 +8,11 @@ import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
 class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener {

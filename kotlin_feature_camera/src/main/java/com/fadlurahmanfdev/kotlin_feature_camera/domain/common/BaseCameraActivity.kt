@@ -1,4 +1,4 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common
+package com.fadlurahmanfdev.kotlin_feature_camera.domain.common
 
 import android.os.Bundle
 import android.util.Log
@@ -18,15 +18,15 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_ANALYSIS
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_CAPTURE
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraRatio
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.callback.BaseCameraCallBack
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_ANALYSIS
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose.IMAGE_CAPTURE
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraRatio
+import com.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.callback.BaseCameraCallBack
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -180,13 +180,23 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
         _cameraListener = listener
     }
 
+    private var _isCapturing: Boolean = false
     override fun takePicture(listener: CameraCaptureListener) {
+        if (_isCapturing) {
+            Log.i(
+                this::class.java.simpleName,
+                "camera currently capturing image"
+            )
+            return
+        }
+        _isCapturing = true
         imageCapture.takePicture(
             executor,
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
                     Log.d(BaseCameraActivity::class.java.simpleName, "onCaptureSuccess")
+                    _isCapturing = false
                     listener.onCaptureSuccess(image, cameraSelector)
                 }
 
@@ -196,6 +206,7 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
                         BaseCameraActivity::class.java.simpleName,
                         "onCaptureError: ${exception.message}"
                     )
+                    _isCapturing = false
                     listener.onCaptureError(
                         FeatureCameraException(
                             enumError = "ERR_GENERAL_CAPTURE",
@@ -249,8 +260,15 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
     }
 
     override fun stopAnalyze() {
-        imageAnalysis.clearAnalyzer()
-        useCaseGroup.useCases.remove(imageAnalysis)
+        try {
+            imageAnalysis.clearAnalyzer()
+            useCaseGroup.useCases.remove(imageAnalysis)
+        } catch (e: Throwable) {
+            Log.e(
+                this::class.java.simpleName,
+                "failed stop for analyze clear analyzer: ${e.message}"
+            )
+        }
         _cameraAnalysisListener?.onStopAnalyze()
         _isAnalyzing = false
     }

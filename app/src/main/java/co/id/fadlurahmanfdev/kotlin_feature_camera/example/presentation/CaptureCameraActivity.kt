@@ -11,13 +11,13 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraFlash
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import com.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 

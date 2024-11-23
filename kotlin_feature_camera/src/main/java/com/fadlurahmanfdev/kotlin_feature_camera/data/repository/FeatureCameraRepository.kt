@@ -1,4 +1,4 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository
+package com.fadlurahmanfdev.kotlin_feature_camera.data.repository
 
 import android.graphics.Bitmap
 import android.graphics.Matrix

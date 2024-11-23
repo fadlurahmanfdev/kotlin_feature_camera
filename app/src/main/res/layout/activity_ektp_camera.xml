@@ -18,7 +18,7 @@
         app:strokeWidth="5dp"
         app:backgroundColor="@color/black"
         app:yTop="100dp"
-        app:opacity="0.3"
+        app:opacity="0.5"
         app:widthLengthRatio="0.9"/>
 
     <LinearLayout

@@ -8,9 +8,9 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 
 class CameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener,
@@ -46,10 +46,8 @@ class CameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener,
         }
 
         ivCamera.setOnClickListener {
-            println("MASUK IS ANALYZING: $isAnalyzing")
             if (!isAnalyzing) {
                 startAnalyze { imageProxy ->
-                    println("MASUK SINI IMAGE PROXY")
                     imageProxy.close()
                 }
             } else {

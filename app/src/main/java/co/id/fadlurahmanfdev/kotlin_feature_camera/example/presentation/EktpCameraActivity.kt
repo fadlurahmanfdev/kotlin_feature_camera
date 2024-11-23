@@ -10,12 +10,12 @@ import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
-import co.id.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
-import co.id.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
+import com.fadlurahmanfdev.kotlin_feature_camera.data.enums.FeatureCameraPurpose
+import com.fadlurahmanfdev.kotlin_feature_camera.data.exception.FeatureCameraException
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepository
+import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
+import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraCaptureListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 
@@ -50,17 +50,7 @@ class EktpCameraActivity : BaseCameraActivity(),
                     imageProxy: ImageProxy,
                     cameraSelector: CameraSelector
                 ) {
-//        val buffer = imageProxy.planes[0].buffer
-//        val bytes = ByteArray(buffer.capacity())
-//        buffer[bytes]
-//        val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-//        val base64Image = FeatureCameraUtility.getBase64FromBitmap(bitmapImage)
-//        if (base64Image != null) {
-//            FeatureCameraUtility.base64Image = base64Image
-//            FeatureCameraUtility.rotationDegree = imageProxy.imageInfo.rotationDegrees.toFloat()
-//            val intent = Intent(this, PreviewEKTPImageActivity::class.java)
-//            startActivity(intent)
-//        }
+
 
                     val bitmap = cameraRepository.getBitmapFromImageProxy(imageProxy)
                     CameraSharedModel.bitmapImage = bitmap
@@ -68,10 +58,15 @@ class EktpCameraActivity : BaseCameraActivity(),
                         Intent(this@EktpCameraActivity, PreviewEKTPImageActivity::class.java)
                     startActivity(intent)
 
+
                 }
 
                 override fun onCaptureError(exception: FeatureCameraException) {
-                    Toast.makeText(this@EktpCameraActivity, "Capture Error: ${exception.enumError}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@EktpCameraActivity,
+                        "Capture Error: ${exception.enumError}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         }

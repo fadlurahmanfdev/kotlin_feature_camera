@@ -1,4 +1,4 @@
-package co.id.fadlurahmanfdev.kotlin_feature_camera.data.exception
+package com.fadlurahmanfdev.kotlin_feature_camera.data.exception
 
 data class FeatureCameraException(
     val enumError: String,
