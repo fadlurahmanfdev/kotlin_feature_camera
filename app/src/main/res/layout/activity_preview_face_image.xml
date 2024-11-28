@@ -18,6 +18,6 @@
         android:layout_height="match_parent"
         android:strokeWidth="5.0"
         app:backgroundColor="@color/black"
-        app:opacity="1.0" />
+        app:opacity="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

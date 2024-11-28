@@ -1,5 +1,6 @@
 package co.id.fadlurahmanfdev.kotlin_feature_camera.example.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -14,6 +15,7 @@ import com.fadlurahmanfdev.kotlin_feature_camera.data.repository.FeatureCameraRe
 import com.fadlurahmanfdev.kotlin_feature_camera.domain.common.BaseCameraActivity
 import com.fadlurahmanfdev.kotlin_feature_camera.domain.listener.CameraAnalysisListener
 import co.id.fadlurahmanfdev.kotlin_feature_camera.example.R
+import co.id.fadlurahmanfdev.kotlin_feature_camera.example.other.CameraSharedModel
 
 class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener {
     lateinit var cameraPreview: PreviewView
@@ -24,6 +26,8 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener 
     override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: FeatureCameraPurpose = FeatureCameraPurpose.IMAGE_ANALYSIS
     private val cameraRepository: FeatureCameraRepository = FeatureCameraRepositoryImpl()
+
+    var counter = 0
 
     override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_face_camera)
@@ -48,7 +52,25 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener 
 
         ivCamera.setOnClickListener {
             startAnalyze { imageProxy ->
-                imageProxy.close()
+                if (counter > 10) {
+                    stopAnalyze()
+                    CameraSharedModel.bitmapImage =
+                        cameraRepository.getBitmapFromImageProxy(imageProxy)
+                    if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                        CameraSharedModel.bitmapImage =
+                            cameraRepository.mirrorHorizontalBitmap(CameraSharedModel.bitmapImage)
+                    }
+                    imageProxy.close()
+                    val intent =
+                        Intent(
+                            this@FaceCameraAnalysisActivity,
+                            PreviewFaceImageActivity::class.java
+                        )
+                    startActivity(intent)
+                } else {
+                    counter++
+                    imageProxy.close()
+                }
             }
         }
 
