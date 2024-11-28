@@ -275,6 +275,7 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
 
     private fun addImageAnalysisAnalyzer(analyzer: ImageAnalysis.Analyzer) {
         val resolution = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(if (cameraRatio == FeatureCameraRatio.RATIO_4_3) AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY else AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
             .build()
         imageAnalysis = ImageAnalysis.Builder()
