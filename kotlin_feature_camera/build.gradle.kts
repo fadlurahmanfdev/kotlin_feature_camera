@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    val camerax_version = "1.3.4"
+    val camerax_version = "1.4.1"
     api("androidx.camera:camera-camera2:${camerax_version}")
     api("androidx.camera:camera-lifecycle:${camerax_version}")
     api("androidx.camera:camera-view:${camerax_version}")
