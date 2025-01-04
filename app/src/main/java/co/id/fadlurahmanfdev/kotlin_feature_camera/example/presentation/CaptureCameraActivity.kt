@@ -89,6 +89,10 @@ class CaptureCameraActivity : BaseCameraActivity(), BaseCameraActivity.CameraLis
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }
 
+    override fun onCameraStarted() {
+
+    }
+
     override fun onFlashModeChanged(flashMode: FeatureCameraFlash) {
         super.onFlashModeChanged(flashMode)
         currentFlashMode = flashMode

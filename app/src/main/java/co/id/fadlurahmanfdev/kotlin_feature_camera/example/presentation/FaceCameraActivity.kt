@@ -79,4 +79,8 @@ class FaceCameraActivity : BaseCameraActivity(),
     override fun setSurfaceProviderBaseCamera(preview: Preview) {
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }
+
+    override fun onCameraStarted() {
+
+    }
 }

@@ -68,6 +68,10 @@ class CameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener,
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }
 
+    override fun onCameraStarted() {
+
+    }
+
     override fun onStartAnalyze() {
         ivCamera.setImageDrawable(
             ContextCompat.getDrawable(

@@ -15,6 +15,7 @@ import androidx.camera.core.TorchState
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -45,6 +46,8 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
     private lateinit var preview: Preview
     abstract var cameraPurpose: FeatureCameraPurpose
     open var cameraRatio: FeatureCameraRatio = FeatureCameraRatio.RATIO_16_9
+    open var resolutionMode: Int? = null
+    open var resolutionStrategy: ResolutionStrategy? = null
     private var cameraFlash: FeatureCameraFlash = FeatureCameraFlash.OFF
     private lateinit var useCaseGroup: UseCaseGroup
 
@@ -81,6 +84,27 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
     private fun onStartCamera() {
         cameraProvider = cameraProviderFuture.get()
         val resolutionSelector = ResolutionSelector.Builder()
+            .apply {
+                if (resolutionMode != null) {
+                    setAllowedResolutionMode(resolutionMode!!)
+                } else {
+                    when (cameraPurpose) {
+                        IMAGE_CAPTURE -> {
+                            setAllowedResolutionMode(ResolutionSelector.PREFER_HIGHER_RESOLUTION_OVER_CAPTURE_RATE)
+                        }
+
+                        IMAGE_ANALYSIS -> {
+                            setAllowedResolutionMode(ResolutionSelector.PREFER_CAPTURE_RATE_OVER_HIGHER_RESOLUTION)
+                        }
+                    }
+                }
+
+                if (resolutionStrategy != null) {
+                    setResolutionStrategy(resolutionStrategy!!)
+                } else if (cameraPurpose == IMAGE_CAPTURE) {
+                    setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                }
+            }
             .setAspectRatioStrategy(if (cameraRatio == FeatureCameraRatio.RATIO_4_3) AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY else AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .build()
 
@@ -110,7 +134,10 @@ abstract class BaseCameraActivity : AppCompatActivity(), BaseCameraCallBack {
             }
         }
         bindCameraToView()
+        onCameraStarted()
     }
+
+    abstract fun onCameraStarted()
 
     private fun bindCameraToView() {
         try {

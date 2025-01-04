@@ -85,6 +85,10 @@ class FaceCameraAnalysisActivity : BaseCameraActivity(), CameraAnalysisListener 
         preview.setSurfaceProvider(cameraPreview.surfaceProvider)
     }
 
+    override fun onCameraStarted() {
+
+    }
+
     override fun onStartAnalyze() {
         ivCamera.visibility = View.GONE
         ivStopCamera.visibility = View.VISIBLE
