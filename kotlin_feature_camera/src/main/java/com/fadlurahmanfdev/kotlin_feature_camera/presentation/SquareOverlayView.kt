@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.fadlurahmanfdev.kotlin_feature_camera.R
 
@@ -13,14 +14,14 @@ import com.fadlurahmanfdev.kotlin_feature_camera.R
 //  https://stackoverflow.com/questions/18387814/drawing-on-canvas-porterduff-mode-clear-draws-black-why,
 //  https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.budiharso.info%2F2016%2F01%2F09%2FCreate-hole-in-android-view%2F&psig=AOvVaw1H6CAwEK6lTQtNTQQf4gRg&ust=1674365656463000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCJjzlKP41_wCFQAAAAAdAAAAABAE
 // ]
-class RectangleOverlayView @JvmOverloads constructor(
+class SquareOverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     private var attributes: TypedArray =
-        context.obtainStyledAttributes(attrs, R.styleable.RectangleOverlayView)
+        context.obtainStyledAttributes(attrs, R.styleable.SquareOverlayView)
 
     // Position
     private var yTop: Float
@@ -35,17 +36,17 @@ class RectangleOverlayView @JvmOverloads constructor(
 
         // Init Position
         yTop =
-            attributes.getDimension(R.styleable.RectangleOverlayView_yTop, -1.0f)
+            attributes.getDimension(R.styleable.SquareOverlayView_yTop, -1.0f)
 
         backgroundColor =
-            attributes.getColor(R.styleable.RectangleOverlayView_backgroundColor, Color.BLACK)
-        opacity = attributes.getFloat(R.styleable.RectangleOverlayView_opacity, 0.3f)
+            attributes.getColor(R.styleable.SquareOverlayView_backgroundColor, Color.BLACK)
+        opacity = attributes.getFloat(R.styleable.SquareOverlayView_opacity, 0.3f)
         setOpacityValue(opacity)
 
-        strokeWidth = attributes.getDimension(R.styleable.RectangleOverlayView_strokeWidth, 5f)
+        strokeWidth = attributes.getDimension(R.styleable.SquareOverlayView_strokeWidth, 5f)
 
         widthLengthRatio =
-            attributes.getFloat(R.styleable.RectangleOverlayView_widthLengthRatio, 0.9f)
+            attributes.getFloat(R.styleable.SquareOverlayView_widthLengthRatio, 0.9f)
         setWidthLengthRatio(widthLengthRatio)
     }
 
@@ -64,7 +65,7 @@ class RectangleOverlayView @JvmOverloads constructor(
         if (value >= 1.0f) {
             widthLengthRatio = 1.0f
         } else if (value < 0.0f) {
-            widthLengthRatio = 0.0f
+            widthLengthRatio = 1.0f
         } else {
             widthLengthRatio = value
         }
@@ -75,19 +76,22 @@ class RectangleOverlayView @JvmOverloads constructor(
         super.dispatchDraw(canvas)
         val viewportCornerRadius = 0
 
-        // Set Frame Position
+        // Set Y Axis Position
         if (yTop == -1.0f) {
             yTop = (0.2 * height).toFloat()
         }
-        val xTopLeft = 1.0f - widthLengthRatio
-        val xTopRight = widthLengthRatio
-        val rectangleWidth = width * widthLengthRatio
-        val rectangleHeight = (54.0f / 86.0f) * rectangleWidth
-        val yBottom = yTop + rectangleHeight
+
+        // Calculate Frame Ratio
+        val realWidth = width * widthLengthRatio
+        val widthLeft = width - realWidth
+        val xLeft = 0.0f + (widthLeft / 2)
+        val xRight = width - (widthLeft / 2)
+        val realHeight = realWidth
+        val yBottom = yTop + realHeight
         val frame = RectF(
-            width * xTopLeft,
+            xLeft,
             yTop,
-            width * xTopRight,
+            xRight,
             yBottom
         )
 
@@ -101,7 +105,13 @@ class RectangleOverlayView @JvmOverloads constructor(
         // Create the path for the overlay with a transparent rectangle
         val path = Path().apply {
             addRect(frame, Path.Direction.CW) // Full canvas
-            addRect(0.0f, 0.0f, width.toFloat(), height.toFloat(), Path.Direction.CCW) // Inner transparent rectangle
+            addRect(
+                0.0f,
+                0.0f,
+                width.toFloat(),
+                height.toFloat(),
+                Path.Direction.CCW
+            ) // Inner transparent rectangle
             fillType = Path.FillType.EVEN_ODD
         }
 
@@ -112,37 +122,10 @@ class RectangleOverlayView @JvmOverloads constructor(
         val strokePaint = Paint().apply {
             isAntiAlias = true
             color = Color.WHITE
-            strokeWidth = this@RectangleOverlayView.strokeWidth
+            strokeWidth = this@SquareOverlayView.strokeWidth
             style = Paint.Style.STROKE
         }
         canvas.drawRect(frame, strokePaint)
-
-
-//        canvas.drawPath(overlayPath, paint)
-//
-//        val strokePaint = Paint().apply {
-//            isAntiAlias = true
-//            color = Color.WHITE
-//            strokeWidth = this@RectangleOverlayView.strokeWidth
-//            style = Paint.Style.STROKE
-//        }
-//        val strokePath = Path().apply {
-//            addRoundRect(
-//                frame,
-//                viewportCornerRadius.toFloat(),
-//                viewportCornerRadius.toFloat(),
-//                Path.Direction.CW
-//            )
-//        }
-//        canvas.drawRect(frame, strokePaint)
-//
-//
-//        val eraser = Paint()
-//        eraser.isAntiAlias = true
-//        eraser.style = Paint.Style.FILL
-//        eraser.color = Color.BLACK
-//        eraser.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-//        canvas.drawPath(strokePath, eraser)
     }
 
     override fun onDraw(canvas: Canvas) {

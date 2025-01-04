@@ -7,6 +7,8 @@
     <attr name="opacity" format="float" />
     <attr name="progressColor" format="color" />
     <attr name="strokeWidth" />
+    <attr name="widthLengthRatio" format="float" />
+    <attr name="yTop" format="dimension" />
 
     <declare-styleable name="CircleProgressOverlayView">
         <!-- Specifies the progress for circle progress painter, minimum is 0.0, max is 1.0. -->
@@ -21,11 +23,20 @@
 
     <declare-styleable name="RectangleOverlayView">
         <!-- Specifies the progress for circle progress painter, minimum is 0.0, max is 1.0. -->
-        <attr name="widthLengthRatio" format="float" />
+        <attr name="widthLengthRatio"/>
         <attr name="strokeWidth" />
         <attr name="backgroundColor" />
         <attr name="opacity" />
-        <attr name="yTop" format="dimension" />
+        <attr name="yTop"/>
+    </declare-styleable>
+
+    <declare-styleable name="SquareOverlayView">
+        <!-- Specifies the progress for circle progress painter, minimum is 0.0, max is 1.0. -->
+        <attr name="widthLengthRatio"/>
+        <attr name="strokeWidth" />
+        <attr name="backgroundColor" />
+        <attr name="opacity" />
+        <attr name="yTop"/>
     </declare-styleable>
 
 </resources>
