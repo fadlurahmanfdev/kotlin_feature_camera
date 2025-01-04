@@ -64,7 +64,7 @@ class RectangleOverlayView @JvmOverloads constructor(
         if (value >= 1.0f) {
             widthLengthRatio = 1.0f
         } else if (value < 0.0f) {
-            widthLengthRatio = 0.0f
+            widthLengthRatio = 1.0f
         } else {
             widthLengthRatio = value
         }
@@ -75,19 +75,20 @@ class RectangleOverlayView @JvmOverloads constructor(
         super.dispatchDraw(canvas)
         val viewportCornerRadius = 0
 
-        // Set Frame Position
+        // Set Y Axis Position
         if (yTop == -1.0f) {
             yTop = (0.2 * height).toFloat()
         }
-        val xTopLeft = 1.0f - widthLengthRatio
-        val xTopRight = widthLengthRatio
-        val rectangleWidth = width * widthLengthRatio
-        val rectangleHeight = (54.0f / 86.0f) * rectangleWidth
-        val yBottom = yTop + rectangleHeight
+        val realWidth = width * widthLengthRatio
+        val widthLeft = width - realWidth
+        val xTopLeft = 0.0f + (widthLeft / 2)
+        val xTopRight = width - (widthLeft / 2)
+        val realHeight = (54.0f / 86.0f) * realWidth
+        val yBottom = yTop + realHeight
         val frame = RectF(
-            width * xTopLeft,
+            xTopLeft,
             yTop,
-            width * xTopRight,
+            xTopRight,
             yBottom
         )
 

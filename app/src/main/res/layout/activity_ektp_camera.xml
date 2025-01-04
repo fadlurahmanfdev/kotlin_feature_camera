@@ -19,7 +19,7 @@
         app:backgroundColor="@color/black"
         app:yTop="100dp"
         app:opacity="5"
-        app:widthLengthRatio="0.9"/>
+        app:widthLengthRatio="1.0"/>
 
     <LinearLayout
         android:id="@+id/ll_camera_controller"
