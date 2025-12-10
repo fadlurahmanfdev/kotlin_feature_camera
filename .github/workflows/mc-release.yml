@@ -55,6 +55,6 @@ jobs:
           cat gradle.properties
       - name: Publish To Maven Central
         run: |
-          ./gradlew clean}
+          ./gradlew clean
           ./gradlew :lumi:publishMavenPublicationToMavenCentralRepository
           
