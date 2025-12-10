@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "co.id.fadlurahmanfdev.kotlin_feature_camera.example"
+    namespace = "com.fadlurahmanfdev.example"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "co.id.fadlurahmanfdev.kotlin_feature_camera.example"
+        applicationId = "com.fadlurahmanfdev.example"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
@@ -47,5 +47,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation(project(":kotlin_feature_camera"))
+    implementation(project(":lumi"))
 }

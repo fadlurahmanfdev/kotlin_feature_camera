@@ -35,7 +35,7 @@ jobs:
           echo "---------------------------||---------------------------"
           echo "---------------------------||---------------------------"
           echo "---------------------------||---------------------------"
-          ./update_version.sh kotlin_feature_camera/build.gradle.kts 0.0.1-beta ${{ steps.setup.outputs.release_name }}
+          ./update_version.sh lumi/build.gradle.kts 0.0.1-beta ${{ steps.setup.outputs.release_name }}
       - name: Fetch Jitpack IO Library
         uses: wei/curl@master
         continue-on-error: true

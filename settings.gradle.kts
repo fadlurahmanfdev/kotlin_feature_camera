@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kotlin_feature_camera"
+rootProject.name = "lumi_camera"
 include(":app")
-include(":kotlin_feature_camera")
+include(":lumi")

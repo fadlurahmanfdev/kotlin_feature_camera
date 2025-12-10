@@ -5,16 +5,21 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.SingleCameraActivity">
+    tools:context=".presentation.EktpLumiCameraActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <co.id.fadlurahmanfdev.kotlin_feature_camera.presentation.EktpOverlayView
+    <com.fadlurahmanfdev.lumi.presentation.RectangleOverlayView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        app:strokeWidth="1dp"
+        app:backgroundColor="@color/black"
+        app:yTop="100dp"
+        app:opacity="5"
+        app:widthLengthRatio="1.0"/>
 
     <LinearLayout
         android:id="@+id/ll_camera_controller"

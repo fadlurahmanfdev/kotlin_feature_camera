@@ -7,17 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".presentation.PreviewImageActivity">
 
-    <ImageView
-        android:id="@+id/previewImage"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_total_bitmap_face"
+        android:padding="20dp"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.fadlurahmanfdev.lumi.presentation.CircleProgressOverlayView
-        android:id="@+id/selfieOverlay"
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:strokeWidth="5.0"
-        app:backgroundColor="@color/black"
-        app:opacity="0.3" />
+        android:layout_height="0dp"
+        android:id="@+id/rv"
+        app:layout_constraintTop_toBottomOf="@id/tv_total_bitmap_face"
+        tools:listitem="@layout/item_bitmap_face"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="3"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
