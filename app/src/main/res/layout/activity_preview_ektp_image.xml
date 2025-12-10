@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.RectangleOverlayView
+    <com.fadlurahmanfdev.lumi.presentation.RectangleOverlayView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:strokeWidth="5dp"
