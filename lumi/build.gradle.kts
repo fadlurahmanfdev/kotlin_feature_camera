@@ -61,8 +61,8 @@ publishing {
     publications {
         register<MavenPublication>("release"){
             groupId = "com.fadlurahmanfdev"
-            artifactId = "kotlin_feature_camera"
-            version = "0.0.1-BETA"
+            artifactId = "lumi"
+            version = "0.0.1"
 
             afterEvaluate {
                 from(components["release"])
@@ -75,7 +75,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "kotlin_feature_camera", "0.0.1-beta")
+    coordinates("com.fadlurahmanfdev", "lumi", "0.0.1-beta")
 
     pom {
         name.set("Lumi Camera")
