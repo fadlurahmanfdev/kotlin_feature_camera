@@ -5,14 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.FaceCameraActivity">
+    tools:context=".presentation.FaceLumiCameraActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.CircleProgressOverlayView
+    <com.fadlurahmanfdev.lumi.presentation.CircleProgressOverlayView
         android:id="@+id/selfieOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -5,14 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.EktpCameraActivity">
+    tools:context=".presentation.EktpLumiCameraActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.fadlurahmanfdev.kotlin_feature_camera.presentation.RectangleOverlayView
+    <com.fadlurahmanfdev.lumi.presentation.RectangleOverlayView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:strokeWidth="1dp"
