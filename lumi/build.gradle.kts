@@ -75,7 +75,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "lumi", "0.0.1-beta")
+    coordinates("com.fadlurahmanfdev", "lumi", "0.0.1")
 
     pom {
         name.set("Lumi Camera")
