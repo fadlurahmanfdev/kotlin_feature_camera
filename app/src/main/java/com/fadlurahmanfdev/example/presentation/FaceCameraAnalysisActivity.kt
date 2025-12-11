@@ -11,12 +11,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.fadlurahmanfdev.lumi.core.enums.LumiCameraPurpose
 import com.fadlurahmanfdev.lumi.LumiCameraHelper
-import com.fadlurahmanfdev.lumi.LumiLumiCameraActivity
+import com.fadlurahmanfdev.lumi.BaseLumiCameraActivity
 import com.fadlurahmanfdev.lumi.domain.listener.LumiCameraAnalysisListener
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.other.AppCameraSharedModel
 
-class FaceLumiLumiCameraAnalysisActivity : LumiLumiCameraActivity(), LumiCameraAnalysisListener {
+class FaceCameraAnalysisActivity : BaseLumiCameraActivity(), LumiCameraAnalysisListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
@@ -62,7 +62,7 @@ class FaceLumiLumiCameraAnalysisActivity : LumiLumiCameraActivity(), LumiCameraA
                     imageProxy.close()
                     val intent =
                         Intent(
-                            this@FaceLumiLumiCameraAnalysisActivity,
+                            this@FaceCameraAnalysisActivity,
                             PreviewFaceImageActivity::class.java
                         )
                     startActivity(intent)

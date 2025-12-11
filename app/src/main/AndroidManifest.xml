@@ -23,13 +23,13 @@
             android:name=".presentation.PreviewFaceImageActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.FaceLumiLumiCameraAnalysisActivity"
+            android:name=".presentation.FaceCameraAnalysisActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.FaceLumiCameraActivity"
+            android:name=".presentation.FaceCameraActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.EktpLumiCameraActivity"
+            android:name=".presentation.EktpCameraActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.PreviewListBitmapFaceImageActivity"
@@ -38,10 +38,10 @@
             android:name=".presentation.PreviewImageActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.LumiLumiCameraAnalysisActivity"
+            android:name=".presentation.CameraAnalysisActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.CaptureLumiCameraActivity"
+            android:name=".presentation.CaptureCameraActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.MainActivity"
