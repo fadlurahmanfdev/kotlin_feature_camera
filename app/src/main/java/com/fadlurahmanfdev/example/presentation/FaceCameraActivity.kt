@@ -11,25 +11,27 @@ import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.fadlurahmanfdev.lumi.core.enums.LumiCameraPurpose
-import com.fadlurahmanfdev.lumi.core.exception.FeatureCameraException
+import com.fadlurahmanfdev.lumi.core.exception.LumiCameraException
 import com.fadlurahmanfdev.lumi.LumiCameraHelper
-import com.fadlurahmanfdev.lumi.LumiLumiCameraActivity
+import com.fadlurahmanfdev.lumi.BaseLumiCameraActivity
 import com.fadlurahmanfdev.lumi.domain.listener.LumiCameraCaptureListener
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.other.AppCameraSharedModel
+import com.fadlurahmanfdev.lumi.presentation.CircleProgressOverlayView
 
-class EktpLumiCameraActivity : LumiLumiCameraActivity(),
-    LumiLumiCameraActivity.CameraListener {
+class FaceCameraActivity : BaseLumiCameraActivity(),
+    BaseLumiCameraActivity.CameraListener {
     lateinit var cameraPreview: PreviewView
     lateinit var ivFlash: ImageView
     lateinit var ivCamera: ImageView
     lateinit var ivSwitch: ImageView
-    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    lateinit var selfieOverlayView: CircleProgressOverlayView
+    override var cameraSelector: CameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
     override var cameraPurpose: LumiCameraPurpose = LumiCameraPurpose.IMAGE_CAPTURE
-    private val cameraHelper = LumiCameraHelper()
+    private val cameraHelper: LumiCameraHelper = LumiCameraHelper()
 
     override fun onCreateBaseCamera(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_ektp_camera)
+        setContentView(R.layout.activity_face_camera)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -39,7 +41,11 @@ class EktpLumiCameraActivity : LumiLumiCameraActivity(),
         ivFlash = findViewById<ImageView>(R.id.iv_flash)
         ivCamera = findViewById<ImageView>(R.id.iv_camera)
         ivSwitch = findViewById<ImageView>(R.id.iv_switch_camera)
-        ivFlash.setOnClickListener {}
+        selfieOverlayView = findViewById(R.id.selfieOverlay)
+
+        ivFlash.setOnClickListener {
+            enableTorch()
+        }
 
         ivSwitch.setOnClickListener {}
 
@@ -49,23 +55,19 @@ class EktpLumiCameraActivity : LumiLumiCameraActivity(),
                     imageProxy: ImageProxy,
                     cameraSelector: CameraSelector
                 ) {
-
-
-                    val bitmap = cameraHelper.getBitmapFromImageProxy(imageProxy)
-                    AppCameraSharedModel.bitmapImage = bitmap
+                    AppCameraSharedModel.bitmapImage =
+                        cameraHelper.getBitmapFromImageProxy(imageProxy)
+                    if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                        AppCameraSharedModel.bitmapImage =
+                            cameraHelper.mirrorHorizontalBitmap(AppCameraSharedModel.bitmapImage)
+                    }
                     val intent =
-                        Intent(this@EktpLumiCameraActivity, PreviewEKTPImageActivity::class.java)
+                        Intent(this@FaceCameraActivity, PreviewFaceImageActivity::class.java)
                     startActivity(intent)
-
-
                 }
 
-                override fun onCaptureError(exception: FeatureCameraException) {
-                    Toast.makeText(
-                        this@EktpLumiCameraActivity,
-                        "Capture Error: ${exception.enumError}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                override fun onCaptureError(exception: LumiCameraException) {
+                    Toast.makeText(this@FaceCameraActivity, "Capture Error: ${exception.enumError}", Toast.LENGTH_SHORT).show()
                 }
             })
         }

@@ -23,7 +23,7 @@ import com.fadlurahmanfdev.lumi.core.enums.LumiCameraFlash
 import com.fadlurahmanfdev.lumi.core.enums.LumiCameraPurpose
 import com.fadlurahmanfdev.lumi.core.enums.LumiCameraPurpose.IMAGE_ANALYSIS
 import com.fadlurahmanfdev.lumi.core.enums.LumiCameraPurpose.IMAGE_CAPTURE
-import com.fadlurahmanfdev.lumi.core.exception.FeatureCameraException
+import com.fadlurahmanfdev.lumi.core.exception.LumiCameraException
 import com.fadlurahmanfdev.lumi.domain.callback.LumiCameraCallBack
 import com.fadlurahmanfdev.lumi.domain.listener.LumiCameraAnalysisListener
 import com.fadlurahmanfdev.lumi.domain.listener.LumiCameraCaptureListener
@@ -32,7 +32,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack {
+abstract class BaseLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var executor: Executor
     private lateinit var camera: Camera
@@ -145,7 +145,7 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
             }
         } catch (e: Throwable) {
             Log.e(
-                LumiLumiCameraActivity::class.java.simpleName,
+                BaseLumiCameraActivity::class.java.simpleName,
                 "error bind camera to view: ${e.message}"
             )
         }
@@ -176,7 +176,7 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
             }
         } else {
             Log.w(
-                LumiLumiCameraActivity::class.java.simpleName,
+                BaseLumiCameraActivity::class.java.simpleName,
                 "unable to turn on torch, cameraPurpose should be ImageAnalysis"
             )
         }
@@ -218,7 +218,7 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
-                    Log.d(LumiLumiCameraActivity::class.java.simpleName, "onCaptureSuccess")
+                    Log.d(BaseLumiCameraActivity::class.java.simpleName, "onCaptureSuccess")
                     _isCapturing = false
                     listener.onCaptureSuccess(image, cameraSelector)
                 }
@@ -226,12 +226,12 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
                 override fun onError(exception: ImageCaptureException) {
                     super.onError(exception)
                     Log.e(
-                        LumiLumiCameraActivity::class.java.simpleName,
+                        BaseLumiCameraActivity::class.java.simpleName,
                         "onCaptureError: ${exception.message}"
                     )
                     _isCapturing = false
                     listener.onCaptureError(
-                        FeatureCameraException(
+                        LumiCameraException(
                             enumError = "ERR_GENERAL_CAPTURE",
                             message = "An error occurred while capturing the image."
                         )
@@ -243,7 +243,7 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
     override fun setFlashModeCapture(flashMode: LumiCameraFlash) {
         if (cameraPurpose == LumiCameraPurpose.IMAGE_CAPTURE) {
             if (!hasFlashUnit()) {
-                Log.d(LumiLumiCameraActivity::class.java.simpleName, "camera didn't has flash unit")
+                Log.d(BaseLumiCameraActivity::class.java.simpleName, "camera didn't has flash unit")
                 return
             }
             imageCapture.flashMode = getImageCaptureFlashMode(flashMode)
@@ -272,7 +272,7 @@ abstract class LumiLumiCameraActivity : AppCompatActivity(), LumiCameraCallBack 
     val isAnalyzing: Boolean get() = _isAnalyzing
     override fun startAnalyze(analyzer: ImageAnalysis.Analyzer) {
         if (_isAnalyzing) {
-            Log.w(LumiLumiCameraActivity::class.java.simpleName, "camera already analysis")
+            Log.w(BaseLumiCameraActivity::class.java.simpleName, "camera already analysis")
             return
         }
         _isAnalyzing = true
