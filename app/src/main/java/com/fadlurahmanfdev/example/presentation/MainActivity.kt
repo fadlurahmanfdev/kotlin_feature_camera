@@ -73,27 +73,27 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
             "CAPTURE_CAMERA" -> {
-                val intent = Intent(this, CaptureLumiCameraActivity::class.java)
+                val intent = Intent(this, CaptureCameraActivity::class.java)
                 startActivity(intent)
             }
 
             "ANALYZE_CAMERA" -> {
-                val intent = Intent(this, LumiLumiCameraAnalysisActivity::class.java)
+                val intent = Intent(this, CameraAnalysisActivity::class.java)
                 startActivity(intent)
             }
 
             "EKTP_CAMERA" -> {
-                val intent = Intent(this, EktpLumiCameraActivity::class.java)
+                val intent = Intent(this, EktpCameraActivity::class.java)
                 startActivity(intent)
             }
 
             "FACE_CAMERA" -> {
-                val intent = Intent(this, FaceLumiCameraActivity::class.java)
+                val intent = Intent(this, FaceCameraActivity::class.java)
                 startActivity(intent)
             }
 
             "FACE_ANALYSIS_CAMERA" -> {
-                val intent = Intent(this, FaceLumiLumiCameraAnalysisActivity::class.java)
+                val intent = Intent(this, FaceCameraAnalysisActivity::class.java)
                 startActivity(intent)
             }
         }

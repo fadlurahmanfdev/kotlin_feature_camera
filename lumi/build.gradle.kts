@@ -62,7 +62,7 @@ publishing {
         register<MavenPublication>("release"){
             groupId = "com.fadlurahmanfdev"
             artifactId = "lumi"
-            version = "0.0.1"
+            version = "1.0.0"
 
             afterEvaluate {
                 from(components["release"])
@@ -75,7 +75,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "lumi", "0.0.1")
+    coordinates("com.fadlurahmanfdev", "lumi", "1.0.0")
 
     pom {
         name.set("Lumi Camera")
